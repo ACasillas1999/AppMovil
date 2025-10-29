@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#ed6b1f</color>
+    <color name="purple_500">#005aa3</color>
+    <color name="purple_700">#ed6b1f</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#005aa3</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="naranja">#ed6b1f</color>
+    <color name="azul_oscuro">#005aa3</color>
+    <color name="card_background">#F5F5F5</color>
+    <color name="green">#468249</color>
+
+
+
+
+    <color name="text_color_light">@color/naranja</color>
+    <!-- Agrega más colores según sea necesario -->
+
+    <integer-array name="chart_colors">
+        <item>@color/material_dynamic_neutral50</item>
+        <item>@color/teal_700</item>
+        <item>@color/teal_200</item>
+        <item>@color/naranja</item>
+        <!-- Agrega más colores según sea necesario -->
+    </integer-array>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:layout_gravity="start"
+    android:gravity="center">
+
+
+
+    <ImageView
+        android:id="@+id/image_view_menu_item_cerrar_sesion"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/histaz" />
+
+</LinearLayout>

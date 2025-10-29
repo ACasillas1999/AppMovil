@@ -1,0 +1,372 @@
+package com.example.app_pedidos.ui.slideshow;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.app_pedidos.R;
+import com.example.app_pedidos.ui.Pedido.DetallePedidoActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class SlideshowFragment extends Fragment {
+
+    private static final String URL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Consultar.php";
+    private final long interval = 5000; // 5 segundos
+    private Timer timer;
+    private LinearLayout linearLayoutContainer;
+    private JSONArray pedidosArray;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        linearLayoutContainer = root.findViewById(R.id.linearLayoutContainer);
+
+        // Iniciar la actualización automática al crear la vista
+        iniciarActualizacionPeriodica();
+        return root;
+    }
+
+    private void iniciarActualizacionPeriodica() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                obtenerPedidos();
+            }
+        }, 0, interval);
+    }
+
+    private void obtenerPedidos() {
+        if (getActivity() == null) {
+            return;
+        }
+
+        // Obtener el nombre de usuario de SharedPreferences
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+
+        // Agregar el nombre de usuario a la URL como parámetro de consulta
+        String urlWithParams = URL + "?username=" + username;
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                urlWithParams,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        if (isAdded()) {
+                            mostrarPedidos(response);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        Log.e("SlideshowFragment", "Error en la solicitud HTTP: " + error.toString());
+                        if (isAdded()) {
+                            mostrarMensaje("Error en la solicitud HTTP");
+                        }
+                    }
+                }
+        );
+
+        if (getContext() != null) {
+            Volley.newRequestQueue(getContext()).add(jsonArrayRequest);
+        }
+    }
+
+    private void mostrarPedidos(JSONArray response) {
+        pedidosArray = response; // Almacenar el JSONArray globalmente
+
+        try {
+            linearLayoutContainer.removeAllViews();
+
+            for (int i = 0; i < response.length(); i++) {
+                final JSONObject pedido = response.getJSONObject(i);
+                String estado = pedido.getString("ESTADO");
+                // Mostrar solo los pedidos entregados o cancelados
+                if (estado.equals("ENTREGADO") || estado.equals("CANCELADO")) {
+                    agregarPedidoALayout(pedido);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void agregarPedidoALayout(final JSONObject pedido) throws JSONException {
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
+
+        // Crear un CardView para cada pedido
+        CardView cardView = new CardView(getContext());
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 0, 0, 16); // Agregar margen inferior entre los pedidos
+        cardView.setLayoutParams(cardParams);
+        cardView.setRadius(16); // Establecer el radio de las esquinas del CardView
+
+        // Obtener el estado del pedido
+        String estado = pedido.getString("ESTADO");
+
+        // Establecer el color de fondo del CardView según el estado
+        if (estado.equals("ENTREGADO")) {
+            cardView.setCardBackgroundColor(Color.parseColor("#C8E6C9")); // Verde claro
+        } else if (estado.equals("CANCELADO")) {
+            cardView.setCardBackgroundColor(Color.parseColor("#FFCDD2")); // Rojo claro
+        } else {
+            cardView.setCardBackgroundColor(Color.WHITE); // Fondo blanco por defecto
+        }
+
+        // Establecer la elevación para que los pedidos tengan sombra
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cardView.setElevation(8);
+        }
+
+        // Crear un LinearLayout para contener la información del pedido
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(16, 16, 16, 16);
+
+        // TextView para mostrar el ID del pedido
+        TextView textOrderId = new TextView(getContext());
+        textOrderId.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        textOrderId.setText("ID: " + pedido.getString("ID"));
+        textOrderId.setTextSize(16);
+
+        // TextView para mostrar la sucursal del pedido
+        TextView textOrderTitle = new TextView(getContext());
+        textOrderTitle.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+
+        // Crear y configurar imageOrderTitle
+        ImageView imageOrderTitle = new ImageView(requireContext());
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
+                200, // Ancho en píxeles
+                200  // Alto en píxeles
+
+        );
+        imageParams.setMargins(0,0,0,0);
+        imageOrderTitle.setLayoutParams(imageParams);
+
+// Obtener el valor del texto de textOrderTitle
+        String sucursal = pedido.getString("SUCURSAL");
+
+// Comparar el valor de sucursal y establecer la imagen
+        switch (sucursal) {
+            case "DEASA":
+                imageOrderTitle.setImageResource(R.drawable.deasaazz);
+                break;
+            case "DIMEGSA":
+                imageOrderTitle.setImageResource(R.drawable.dimegsa);
+                break;
+            case "AIESA":
+                imageOrderTitle.setImageResource(R.drawable.aiesa);
+                break;
+            case "SEGSA":
+                imageOrderTitle.setImageResource(R.drawable.segsa);
+                break;
+            case "FESA":
+                imageOrderTitle.setImageResource(R.drawable.fesa);
+                break;
+            case "TAPATIA":
+                imageOrderTitle.setImageResource(R.drawable.eitsa);
+                break;
+            case "GABSA":
+                imageOrderTitle.setImageResource(R.drawable.gabl);
+                break;
+            case "ILUMINACION":
+                imageOrderTitle.setImageResource(R.drawable.ilum);
+                break;
+            case "VALLARTA":
+                imageOrderTitle.setImageResource(R.drawable.gabl);
+                break;
+            default:
+                imageOrderTitle.setImageResource(R.drawable.gabl);
+                break;
+        }
+
+        // Aplicar el filtro de color según el estado
+        int filterColor;
+        switch (estado) {
+            case "ENTREGADO":
+                filterColor = Color.parseColor("#5A705B"); // Verde
+                break;
+            case "CANCELADO":
+                filterColor = Color.parseColor("#6B5B76"); // Rojo
+                break;
+
+            default:
+                filterColor = Color.WHITE; // Fondo blanco por defecto
+                break;
+        }
+
+        imageOrderTitle.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
+
+        // Configurar textOrderTitle
+          textOrderTitle.setText("Sucursal: " + pedido.getString("SUCURSAL"));
+        //  textOrderTitle.setText("Sucursal:"+ imageParams);
+        textOrderTitle.setTextSize(18);
+        textOrderTitle.setTypeface(null, Typeface.BOLD);
+
+
+        /*
+        textOrderTitle.setText("Sucursal: " + pedido.getString("SUCURSAL"));
+        textOrderTitle.setTextSize(18);
+        textOrderTitle.setTypeface(null, Typeface.BOLD);*/
+
+        // TextView para mostrar el nombre del cliente
+        TextView textOrderDetails = new TextView(getContext());
+        textOrderDetails.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        textOrderDetails.setText("Cliente: " + pedido.getString("NOMBRE_CLIENTE"));
+        textOrderDetails.setTextSize(16);
+
+        // TextView para mostrar el estado del pedido
+        TextView textOrderState = new TextView(getContext());
+        textOrderState.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        textOrderState.setText("Estado: " + pedido.getString("ESTADO"));
+        textOrderState.setTextSize(16);
+
+        // TextView para mostrar la fecha de recepción del pedido
+        TextView textOrderDate = new TextView(getContext());
+        textOrderDate.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        textOrderDate.setText("Fecha Recepción: " + pedido.getString("FECHA_RECEPCION_FACTURA"));
+        textOrderDate.setTextSize(16);
+
+        // Crear el botón Ver Detalles
+        Button btnVerDetalle = new Button(getContext());
+        btnVerDetalle.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        btnVerDetalle.setText("Ver Detalles");
+        btnVerDetalle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isAdded()) {
+                    return;
+                }
+                try {
+                    // Intent para abrir la actividad de detalles del pedido
+                    Intent intent = new Intent(getContext(), DetallePedidoActivity.class);
+                    intent.putExtra("ID", pedido.getString("ID"));
+                    intent.putExtra("SUCURSAL", pedido.getString("SUCURSAL"));
+                    intent.putExtra("NOMBRE_CLIENTE", pedido.getString("NOMBRE_CLIENTE"));
+                    intent.putExtra("ESTADO", pedido.getString("ESTADO"));
+                    intent.putExtra("FECHA_RECEPCION_FACTURA", pedido.getString("FECHA_RECEPCION_FACTURA"));
+                    intent.putExtra("FECHA_ENTREGA_CLIENTE", pedido.getString("FECHA_ENTREGA_CLIENTE"));
+                    intent.putExtra("CHOFER_ASIGNADO", pedido.getString("CHOFER_ASIGNADO"));
+                    intent.putExtra("VENDEDOR", pedido.getString("VENDEDOR"));
+                    intent.putExtra("FACTURA", pedido.getString("FACTURA"));
+                    intent.putExtra("DIRECCION", pedido.getString("DIRECCION"));
+                    intent.putExtra("FECHA_MIN_ENTREGA", pedido.getString("FECHA_MIN_ENTREGA"));
+                    intent.putExtra("FECHA_MAX_ENTREGA", pedido.getString("FECHA_MAX_ENTREGA"));
+                    intent.putExtra("MIN_VENTANA_HORARIA_1", pedido.getString("MIN_VENTANA_HORARIA_1"));
+                    intent.putExtra("MAX_VENTANA_HORARIA_1", pedido.getString("MAX_VENTANA_HORARIA_1"));
+                    intent.putExtra("TELEFONO", pedido.getString("TELEFONO"));
+                    intent.putExtra("CONTACTO", pedido.getString("CONTACTO"));
+                    intent.putExtra("COMENTARIOS", pedido.getString("COMENTARIOS"));
+                    intent.putExtra("Ruta", pedido.getString("Ruta"));
+                    intent.putExtra("Coord_Origen", pedido.getString("Coord_Origen"));
+                    intent.putExtra("Coord_Destino", pedido.getString("Coord_Destino"));
+                    startActivity(intent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    // Manejar la excepción JSONException si ocurre
+                    Log.e("SlideshowFragment", "Error al procesar JSON: " + e.getMessage());
+                    // Mostrar un mensaje de error al usuario si lo deseas
+                    if (isAdded()) {
+                        mostrarMensaje("Error al procesar JSON");
+                    }
+                }
+            }
+        });
+
+        // Agregar los elementos al LinearLayout
+
+        linearLayout.addView(imageOrderTitle);
+        linearLayout.addView(textOrderTitle);
+
+        linearLayout.addView(textOrderId);
+        //linearLayout.addView(textOrderTitle);
+        linearLayout.addView(textOrderDetails);
+        linearLayout.addView(textOrderState);
+        linearLayout.addView(textOrderDate);
+
+        // Agregar el botón al LinearLayout
+        linearLayout.addView(btnVerDetalle);
+
+        // Agregar el LinearLayout al CardView
+        cardView.addView(linearLayout);
+
+        // Agregar el CardView al contenedor principal
+        linearLayoutContainer.addView(cardView);
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+}

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <TextView
+        android:id="@+id/month_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mes Actual"
+        android:textAllCaps="true"
+        android:textAppearance="@drawable/constdogr"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <FrameLayout
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+
+        android:layout_height="50dp" ><!-- Etiqueta para el mes actual -->
+    <!-- Gráfico circular -->
+
+        <Button
+            android:id="@+id/previous_month_button"
+            android:layout_width="133dp"
+            android:layout_height="28dp"
+            android:layout_gravity="start"
+            android:background="@drawable/mespana"
+            android:paddingBottom="8dp"
+            android:rotationY="0" />
+
+    <Button
+        android:id="@+id/current_month_button"
+        android:layout_width="133dp"
+        android:layout_height="28dp"
+        android:layout_gravity="end"
+        android:background="@drawable/mesactna"
+        android:insetLeft="0dp"
+        android:paddingBottom="16dp" />
+
+   </FrameLayout>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp"/>
+
+
+    <View
+        android:id="@+id/divider"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/azul_oscuro" />
+
+    <TextView
+        android:id="@+id/Tabla_Resumen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Resumen"
+        android:textAllCaps="true"
+        android:textAppearance="@drawable/constdogr"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <!-- Tabla para mostrar datos -->
+    <TableLayout
+        android:id="@+id/table_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:stretchColumns="1"
+        android:paddingBottom="16dp"
+
+        android:background="@color/naranja"
+    android:padding="8dp">
+
+    <!-- Ejemplo de una fila de la tabla -->
+    <TableRow
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/naranja"
+    android:padding="8dp">
+
+
+</TableRow>
+
+    <!-- Puedes agregar más filas de la misma manera -->
+    </TableLayout>
+
+
+    </LinearLayout>

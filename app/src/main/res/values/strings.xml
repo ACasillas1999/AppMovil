@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">App_Pedidos</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Grupo Ascencio</string>
+    <string name="nav_header_subtitle">Nombre</string> <!-- Valor predeterminado -->
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Pedidos Programados</string>
+    <string name="menu_gallery">Estadisticas</string>
+    <string name="menu_slideshow">Historial</string>
+    <string name="pedidos_programados">Pedidos Programados</string>
+    <string name="order_title">Order Title</string>
+    <string name="order_details">Order Details</string>
+    <string name="DetallePedido">Detalle Pedido</string>
+    <string name="Actualizar">Actualizar</string>
+    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1IjoiYWNhc2lsbGFzNzY2IiwiYSI6ImNsdnk4bXFqejJtajUybG1nNGVqMTF6eXEifQ.6jPJtF0lGWi1t8T70rxXlQ</string>
+    <string name="tomar_foto">Tomar Foto</string>
+</resources>

@@ -1,0 +1,3 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#80000000"/> <!-- Este color tiene un 50% de opacidad (80 en hexadecimal) -->
+</shape>

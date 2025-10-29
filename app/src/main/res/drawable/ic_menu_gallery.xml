@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Eje Y -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M2,4h2v16h-2z"/>
+    <!-- Eje X -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M4,20v-2h16v2z"/>
+    <!-- Línea de la gráfica -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M5,14l3,-3 2,2 3,-4 4,6"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"/>
+</vector>
