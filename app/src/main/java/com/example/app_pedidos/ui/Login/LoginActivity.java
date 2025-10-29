@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     // Método para autenticar al usuario utilizando la API PHP
     private void autenticarUsuario(final String username, String password) {
         // URL de tu API PHP de autenticación
-        //String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/login.php";
+        ///String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/login.php";
         String url = "http://192.168.60.194/Pedidos_GA/App/login.php";
 
         // Realizar una solicitud HTTP POST usando Volley
