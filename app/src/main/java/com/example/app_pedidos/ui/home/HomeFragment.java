@@ -33,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.MainActivity;
+import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.R;
 import com.example.app_pedidos.ui.Pedido.DetallePedidoActivity;
 
@@ -47,7 +48,7 @@ import java.net.URLEncoder;
 public class HomeFragment extends Fragment {
 
    // private static final String URL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Consultar.php";
-   private static final String URL = "http://192.168.60.194/Pedidos_GA/App/Consultar.php";
+   private static final String URL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php";
     private final long interval = 5000; // 5 segundos
     private Timer timer;
     private LinearLayout linearLayoutContainer;

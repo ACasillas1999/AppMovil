@@ -63,6 +63,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import com.example.app_pedidos.ApiConfig;
 
 public class DetallePedidoActivity extends AppCompatActivity {
 
@@ -237,7 +238,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(pedidoId)) {
             OkHttpClient client = new OkHttpClient();
             //String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/verificar_foto.php?id_pedido=" + pedidoId;
-             String url = "http://192.168.60.194/Pedidos_GA/App/verificar_foto.php?id_pedido=" + pedidoId;
+             String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/verificar_foto.php?id_pedido=" + pedidoId;
 
             Request request = new Request.Builder()
                     .url(url)
@@ -312,7 +313,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
     private void descargarDocumento(String rutaDocumento) {
         if (!TextUtils.isEmpty(rutaDocumento)) {
             ///String urlBase = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/";
-            String urlBase = "http://192.168.60.194/Pedidos_GA/";
+            String urlBase = ApiConfig.BASE_URL + "/Pedidos_GA/";
             
             String urlCompleta = urlBase + rutaDocumento;
 
@@ -510,7 +511,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
                     Request request = new Request.Builder()
                            // .url("https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/guardar_foto.php")
-                            .url("http://192.168.60.194/Pedidos_GA/App/guardar_foto.php")
+                            .url(ApiConfig.BASE_URL + "/Pedidos_GA/App/guardar_foto.php")
                             .post(requestBody)
                             .build();
 
@@ -795,7 +796,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
             Request request = new Request.Builder()
                  //   .url("https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/actualizar_estado.php")
-                    .url("http://192.168.60.194/Pedidos_GA/App/actualizar_estado.php")
+                    .url(ApiConfig.BASE_URL + "/Pedidos_GA/App/actualizar_estado.php")
                     .post(formBody)
                     .build();
 

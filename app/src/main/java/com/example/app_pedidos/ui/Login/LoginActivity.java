@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.MainActivity;
+import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.R;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,8 +55,8 @@ public class LoginActivity extends AppCompatActivity {
     // Método para autenticar al usuario utilizando la API PHP
     private void autenticarUsuario(final String username, String password) {
         // URL de tu API PHP de autenticación
-        ///String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/login.php";
-        String url = "http://192.168.60.194/Pedidos_GA/App/login.php";
+      // String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/login.php";
+        String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/login.php";
 
         // Realizar una solicitud HTTP POST usando Volley
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

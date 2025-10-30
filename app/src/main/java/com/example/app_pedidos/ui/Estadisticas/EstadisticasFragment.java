@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.R;
+import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.databinding.FragmentEstBinding;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -85,7 +86,7 @@ public class EstadisticasFragment extends Fragment {
         // URL del archivo PHP para el mes actual
      //   String currentMonthURL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
 
-        String currentMonthURL = "http://192.168.60.194/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
+        String currentMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
 
         // Cargar los datos del mes actual por defecto al cargar la página
         obtenerEstadosPedidos(currentMonthURL);
@@ -97,7 +98,7 @@ public class EstadisticasFragment extends Fragment {
                 currentMonth = getPreviousMonth();
                 monthLabel.setText(currentMonth);
               //  String previousMonthURL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Pedidos_MesAnterior.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
-                String previousMonthURL = "http://192.168.60.194/Pedidos_GA/App/Pedidos_MesAnterior.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
+                String previousMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_MesAnterior.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
 
                 
                 obtenerEstadosPedidos(previousMonthURL);
@@ -116,7 +117,7 @@ public class EstadisticasFragment extends Fragment {
                 currentMonth = getCurrentMonth();
                 monthLabel.setText(currentMonth);
               //  String currentMonthURL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
-                String currentMonthURL = "http://192.168.60.194/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
+                String currentMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
   
               obtenerEstadosPedidos(currentMonthURL);
                 currentMonthButton.setBackgroundResource(R.drawable.mesactna);

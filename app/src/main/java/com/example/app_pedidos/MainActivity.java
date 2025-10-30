@@ -22,6 +22,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.app_pedidos.databinding.ActivityMainBinding;
+import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.ui.Login.LoginActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -30,6 +31,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import org.json.JSONObject;
+import android.widget.EditText;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,17 +113,18 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
 
     private void verificarVehiculoAsignado(final String username) {
        // final String urlVerificar = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/verificar_vehiculo.php";
-        final String urlVerificar = " http://192.168.60.194/Pedidos_GA/App/verificar_vehiculo.php";
+        final String urlVerificar = ApiConfig.BASE_URL + "/Pedidos_GA/App/verificar_vehiculo.php";
        
         StringRequest request = new StringRequest(Request.Method.POST, urlVerificar,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         String body = response == null ? "" : response.trim().toUpperCase();
-                        boolean asignado = body.contains("ASIGNADO") || body.equals("OK") || body.equals("1") || body.equals("TRUE");
-
-                        if (!asignado) {
+                        // Solo permitir continuar si la respuesta es EXACTAMENTE "ASIGNADO"
+                        if (!"ASIGNADO".equals(body)) {
                             mostrarDialogoSinVehiculo();
+                        } else {
+                            verificarEstadoKilometraje(username);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -139,6 +143,84 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
         };
 
         Volley.newRequestQueue(this).add(request);
+    }
+
+    private void verificarEstadoKilometraje(final String username) {
+        final String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/estado_kilometraje.php";
+
+        StringRequest req = new StringRequest(Request.Method.POST, url,
+                response -> {
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        if (!obj.optBoolean("ok", false)) return;
+                        boolean assigned = obj.optBoolean("assigned", false);
+                        boolean needs = obj.optBoolean("needs_km", false);
+                        if (assigned && needs) {
+                            mostrarDialogoCapturaKilometraje(username);
+                        }
+                    } catch (Exception ignored) { }
+                },
+                error -> { /* ignorar */ }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> p = new HashMap<>();
+                p.put("username", username);
+                return p;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(req);
+    }
+
+    private void mostrarDialogoCapturaKilometraje(final String username) {
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        input.setHint("Kilometraje actual");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Captura de kilometraje")
+                .setMessage("No hay registro de los últimos 3 días. Ingresa el odómetro actual.")
+                .setView(input)
+                .setCancelable(false)
+                .setPositiveButton("Guardar", (d, w) -> {
+                    String val = input.getText().toString().trim();
+                    if (val.isEmpty()) {
+                        Toast.makeText(this, "Ingresa un valor", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    registrarKilometraje(username, val);
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void registrarKilometraje(final String username, final String km) {
+        final String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/registrar_kilometraje.php";
+
+        StringRequest req = new StringRequest(Request.Method.POST, url,
+                response -> {
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        if (obj.optBoolean("ok", false)) {
+                            Toast.makeText(this, "Kilometraje registrado", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "No se pudo registrar", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                error -> Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show()) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> p = new HashMap<>();
+                p.put("username", username);
+                p.put("km", km);
+                return p;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(req);
     }
 
     private void mostrarDialogoSinVehiculo() {

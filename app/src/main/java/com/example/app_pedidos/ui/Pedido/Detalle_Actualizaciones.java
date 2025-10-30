@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.R;
+import com.example.app_pedidos.ApiConfig;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -80,7 +81,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
 
     private void obtenerDetallesPedido(String pedidoId) {
         //String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Detalle_Actualizaciones.php?id_pedido=" + pedidoId;
-        String url = "http://192.168.60.194/Pedidos_GA/App/Detalle_Actualizaciones.php?id_pedido=" + pedidoId;
+        String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/Detalle_Actualizaciones.php?id_pedido=" + pedidoId;
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
@@ -181,7 +182,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
 
     private void obtenerImagenPedido(String pedidoId) {
        // String url = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Ver_Foto.php?id_pedido=" + pedidoId;
-        String url = "http://192.168.60.194/Pedidos_GA/App/Ver_Foto.php?id_pedido=" + pedidoId;
+        String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/Ver_Foto.php?id_pedido=" + pedidoId;
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {

@@ -13,7 +13,7 @@ import java.net.URL;
 public class ConexionPHP {
 
    // private static final String URL_PEDIDOS = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Consultar.php";
-   private static final String URL_PEDIDOS = "http://192.168.60.194/Pedidos_GA/App/Consultar.php";
+   private static final String URL_PEDIDOS = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php";
     
 
     public static void obtenerPedidos(final PedidoListener listener) {
