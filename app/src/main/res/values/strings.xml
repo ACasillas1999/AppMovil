@@ -1,9 +1,9 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+﻿<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">App_Pedidos</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Grupo Ascencio</string>
-    <string name="nav_header_subtitle">Nombre</string> <!-- Valor predeterminado -->
+    <string name="nav_header_subtitle">Nombre</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -15,6 +15,30 @@
     <string name="order_details">Order Details</string>
     <string name="DetallePedido">Detalle Pedido</string>
     <string name="Actualizar">Actualizar</string>
+
+    <!-- Detalle Pedido labels -->
+    <string name="pedido_datos">DATOS DEL PEDIDO</string>
+    <string name="fechas">FECHAS</string>
+    <string name="asignacion">ASIGNACIÓN</string>
+    <string name="entrega_direccion">ENTREGA Y DIRECCIÓN</string>
+    <string name="cliente_contacto">CLIENTE Y CONTACTO</string>
+
+    <string name="id_pedido_label">ID del Pedido:</string>
+    <string name="sucursal_label">Sucursal</string>
+    <string name="cliente_label">Cliente</string>
+    <string name="estado_label">Estado:</string>
+    <string name="fecha_recepcion_label">Fecha de Recepción:</string>
+    <string name="fecha_entrega_label">Fecha de Entrega:</string>
+    <string name="direccion_label">Dirección:</string>
+    <string name="fecha_min_entrega_label">Fecha mínima de Entrega:</string>
+    <string name="fecha_max_entrega_label">Fecha máxima de Entrega:</string>
+    <string name="ventana_horaria_label">Ventana Horaria Mínima y Máxima:</string>
+    <string name="nombre_cliente_label">Nombre del Cliente</string>
+    <string name="telefono_label">Teléfono:</string>
+    <string name="contacto_label">Contacto:</string>
+    <string name="comentarios_label">Comentarios:</string>
+    <string name="factura">Factura:</string>
+
     <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1IjoiYWNhc2lsbGFzNzY2IiwiYSI6ImNsdnk4bXFqejJtajUybG1nNGVqMTF6eXEifQ.6jPJtF0lGWi1t8T70rxXlQ</string>
     <string name="tomar_foto">Tomar Foto</string>
 </resources>

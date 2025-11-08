@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".ui.Pedido.DetallePedidoActivity"
-    >
+    tools:context=".ui.Pedido.DetallePedidoActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_Pedidos"
@@ -16,638 +15,662 @@
         android:background="@color/naranja"
         android:elevation="4dp">
 
-        <!-- Contenedor LinearLayout para alinear el botón y la imagen -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:orientation="horizontal">
 
-
-
             <ImageButton
                 android:id="@+id/VOlverBton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start|left"
-                android:background="@null"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
                 android:contentDescription="Volver"
                 android:src="@drawable/ic_arrow_back" />
 
-            <ImageView
-                android:id="@+id/logoImage"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-               android:layout_marginVertical="5dp"
-                android:src="@drawable/actpedaz" />
-
         </LinearLayout>
-
     </androidx.appcompat.widget.Toolbar>
-
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar_Pedidos"
         android:layout_above="@+id/buttons_container"
-        android:padding="8dp">
+        android:padding="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ID del Pedido -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pedido_datos"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
             <LinearLayout
+                android:id="@+id/section_pedido"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/textIdLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ID del Pedido:"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textId"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <!-- Sucursal -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/textSucursalLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sucursal:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textSucursal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <!-- Cliente -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/textClienteLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cliente:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textCliente"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
-
-            <!-- Estado -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/textEstadoLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Estado:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                android:padding="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
                     <TextView
-                        android:id="@+id/textEstado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_pedido_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textId"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@android:color/black"
-                        android:textSize="16sp" />
+                        android:textStyle="bold"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/sucursal_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/textSucursal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cliente_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/textCliente"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/estado_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/textEstado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="8dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnActualizarEstado"
                         style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
-                        android:text="Actualizar"
+                        android:text="@string/Actualizar"
                         android:textAllCaps="true"
                         android:textSize="12sp"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:minWidth="0dp"
-                        android:paddingHorizontal="16dp"
+                        android:paddingHorizontal="12dp"
                         android:backgroundTint="@color/naranja"
                         android:textColor="@android:color/white" />
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <!-- Fecha de Recepción -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fechas"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
             <LinearLayout
+                android:id="@+id/section_fechas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/textFechaRecepcionLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha de Recepción:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textFechaRecepcion"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fecha_recepcion_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Fecha de Entrega -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textFechaRecepcion"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textFechaEntregaLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha de Entrega:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textFechaEntrega"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fecha_entrega_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textFechaEntrega"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <!-- Chofer -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/asignacion"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
             <LinearLayout
+                android:id="@+id/section_asignacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/textChoferLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chofer:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textChofer"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chofer:"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Vendedor -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textChofer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textVendedorLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vendedor:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textVendedor"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vendedor:"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Factura -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textVendedor"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textFacturaLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Factura:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textFactura"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/factura"
+                        tools:text="Factura:"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textFactura"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <!-- Dirección -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/entrega_direccion"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
 
-            <!-- Divisor -->
             <LinearLayout
+                android:id="@+id/section_entrega"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/textDireccionLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dirección:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textDireccion"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/direccion_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Fecha Mínima de Entrega -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textDireccion"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textFechaMinEntregaLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha Mínima de Entrega:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textFechaMinEntrega"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fecha_min_entrega_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Fecha Máxima de Entrega -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textFechaMinEntrega"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textFechaMaxEntregaLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha Máxima de Entrega:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textFechaMaxEntrega"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fecha_max_entrega_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Ventana Horaria 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textFechaMaxEntrega"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textVentanaHoraria1Label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ventana Horaria Minima y Maxima:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textVentanaHoraria1"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ventana_horaria_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textVentanaHoraria1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <!-- Nombre del Cliente -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cliente_contacto"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
             <LinearLayout
+                android:id="@+id/section_cliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/textNombreClienteLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre del Cliente:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textNombreCliente"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nombre_cliente_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Teléfono -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textNombreCliente"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textTelefonoLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Teléfono:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textTelefono"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
 
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/telefono_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-            <!-- Contacto -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/textTelefono"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textContactoLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contacto:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
 
-                <TextView
-                    android:id="@+id/textContacto"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/contacto_label"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textContacto"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Divisor -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <!-- Comentarios -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOTAS"
+                android:textColor="@color/azul_oscuro"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
             <LinearLayout
+                android:id="@+id/section_notas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp">
+                android:orientation="horizontal"
+                android:padding="8dp">
 
                 <TextView
-                    android:id="@+id/textComentariosLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Comentarios:"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:text="@string/comentarios_label"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textComentarios"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginVertical="1dp">
-
-
-                <!-- New Button -->
-
-                <Button
-                    android:id="@+id/btnDescargarDocumento"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/constdogr"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toEndOf="@+id/Espacio"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.489" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingTop="8dp">
 
                 <Button
                     android:id="@+id/btnTomarFoto"
-                    android:layout_width="170dp"
+                    android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_margin="20dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/tomfotgr"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/Espacio"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.492" />
+                    android:textSize="16sp" />
 
                 <Button
-                    android:id="@+id/btnDetalles"
-                    android:layout_width="320dp"
+                    android:id="@+id/btnDescargarDocumento"
+                    android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_margin="16dp"
-                    android:background="@drawable/detyactna"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="4:1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btnTomarFoto"
-                    app:layout_constraintWidth_default="percent"
-                    app:layout_constraintWidth_percent="0.8" />
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/constdogr"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/Espacio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.54"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:layout_editor_absoluteY="81dp" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btnDetalles"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/detyactna"
+                android:textSize="16sp" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- Botones -->
     <LinearLayout
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"
@@ -658,21 +681,11 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- <Button
-            android:id="@+id/btnVolver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Volver"
-            android:textSize="16sp"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/naranja"
-            android:layout_margin="8dp"/>-->
-
         <Button
             android:id="@+id/btnAbrirGoogleMaps"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/mapsaz" />
-
     </LinearLayout>
+
 </RelativeLayout>
