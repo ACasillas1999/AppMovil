@@ -51,10 +51,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-        android:layout_marginVertical="60dp"
-
-        android:padding="20dp">
+        android:layout_below="@id/toolbar_Pedidos"
+        android:layout_above="@+id/buttons_container"
+        android:padding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,8 +72,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ID del Pedido:"
-                    android:textColor="@android:color/black"
-                    android:textSize="24sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -82,7 +81,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:textStyle="bold"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <!-- Sucursal -->
@@ -168,18 +168,20 @@
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnActualizarEstado"
-                        android:layout_width="160dp"
-                        android:layout_height="35dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="46dp"
-                        android:layout_marginBottom="8dp"
-                        android:backgroundTint="@color/white"
-                        android:foreground="@drawable/actna"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Actualizar"
+                        android:textAllCaps="true"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@color/naranja"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -649,11 +651,10 @@
     <LinearLayout
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginVertical="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -669,13 +670,9 @@
 
         <Button
             android:id="@+id/btnAbrirGoogleMaps"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_margin="90dp"
-            android:layout_marginEnd="1dp"
-            android:background="@drawable/mapsaz"
-
-            />
+            android:background="@drawable/mapsaz" />
 
     </LinearLayout>
 </RelativeLayout>

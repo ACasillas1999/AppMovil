@@ -19,15 +19,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.app_pedidos.network.Utf8JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.StringRequest;
+import com.example.app_pedidos.network.Utf8StringRequest;
 import com.example.app_pedidos.R;
 import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.databinding.FragmentEstBinding;
+import com.example.app_pedidos.ui.Login.LoginActivity;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
@@ -58,8 +64,9 @@ public class EstadisticasFragment extends Fragment {
     private Button previousMonthButton;
     private Button currentMonthButton;
     private String currentMonth;
+    private AlertDialog noVehiculoDialog;
 
-    // Colores para las porciones del gráfico
+    // Colores para las porciones del grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico
     private final int[] chartColors = new int[]{0xFFCCE5FF, 0xFFFFCCCC, 0xFFCCFFCC, 0xFFFFD699, 0xFFFFFFCC, 0xFFCC99FF};
 
     @Override
@@ -88,10 +95,10 @@ public class EstadisticasFragment extends Fragment {
 
         String currentMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
 
-        // Cargar los datos del mes actual por defecto al cargar la página
-        obtenerEstadosPedidos(currentMonthURL);
+        // Cargar los datos del mes actual por defecto solo si tiene vehÃƒÆ’Ã‚Â­culo asignado
+        verificarVehiculoAsignadoThen(() -> obtenerEstadosPedidos(currentMonthURL));
 
-        // Configurar el botón para consultar el mes pasado
+        // Configurar el botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para consultar el mes pasado
         previousMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,7 +108,7 @@ public class EstadisticasFragment extends Fragment {
                 String previousMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_MesAnterior.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
 
                 
-                obtenerEstadosPedidos(previousMonthURL);
+                verificarVehiculoAsignadoThen(() -> obtenerEstadosPedidos(previousMonthURL));
                 previousMonthButton.setBackgroundResource(R.drawable.mespana);
                 currentMonthButton.setBackgroundResource(R.drawable.mesactna);
 
@@ -110,7 +117,7 @@ public class EstadisticasFragment extends Fragment {
             }
         });
 
-        // Configurar el botón para volver al mes actual
+        // Configurar el botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para volver al mes actual
         currentMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,14 +126,14 @@ public class EstadisticasFragment extends Fragment {
               //  String currentMonthURL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
                 String currentMonthURL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
   
-              obtenerEstadosPedidos(currentMonthURL);
+              verificarVehiculoAsignadoThen(() -> obtenerEstadosPedidos(currentMonthURL));
                 currentMonthButton.setBackgroundResource(R.drawable.mesactna);
                 previousMonthButton.setBackgroundResource(R.drawable.mespana);
 
             }
         });
 
-        // Iniciar la actualización automática al crear la vista
+        // Iniciar la actualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tica al crear la vista
        // iniciarActualizacionPeriodica();
 
         return root;
@@ -160,7 +167,7 @@ public class EstadisticasFragment extends Fragment {
         // URL del archivo PHP que maneja la consulta de pedidos
         String URL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Pedidos.php?username=" + username + "&mes=" + mes;
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+        JsonArrayRequest jsonArrayRequest = new com.example.app_pedidos.network.Utf8JsonArrayRequest(
                 Request.Method.GET,
                 URL,
                 null,
@@ -192,7 +199,7 @@ public class EstadisticasFragment extends Fragment {
 
 
     private void obtenerEstadosPedidos(String url) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+        JsonArrayRequest jsonArrayRequest = new com.example.app_pedidos.network.Utf8JsonArrayRequest(
                 Request.Method.GET,
                 url,
                 null,
@@ -227,7 +234,7 @@ public class EstadisticasFragment extends Fragment {
                                     body = new String(data);
                                 }
                             }
-                            // Tratar 200/204/404 vacíos o cuerpo [] como "sin datos"
+                            // Tratar 200/204/404 vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­os o cuerpo [] como "sin datos"
                             if (code == 204 || code == 404 || code == 200) {
                                 if (data == null || data.length == 0 || (body != null && body.trim().equals("[]"))) {
                                     mostrarSinDatos();
@@ -236,11 +243,11 @@ public class EstadisticasFragment extends Fragment {
                             }
                         }
                         if (error instanceof com.android.volley.ParseError) {
-                            // Cuerpo vacío o no JSON: trátalo como sin datos
+                            // Cuerpo vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o o no JSON: trÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡talo como sin datos
                             mostrarSinDatos();
                             return;
                         }
-                        mostrarError("Problema de conexión. Intenta de nuevo.");
+                        mostrarError("Problema de conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n. Intenta de nuevo.");
                     }
                 }
         );
@@ -249,7 +256,7 @@ public class EstadisticasFragment extends Fragment {
     }
 
     private void mostrarSinDatos() {
-        // Dejar el gráfico con mensaje de sin datos y una fila informativa en tabla
+        // Dejar el grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico con mensaje de sin datos y una fila informativa en tabla
         if (pieChart != null) {
             pieChart.clear();
             pieChart.setNoDataText("No hay datos disponibles para mostrar.");
@@ -299,7 +306,7 @@ public class EstadisticasFragment extends Fragment {
             }
         }
 
-        // Añadir las entradas al ArrayList y asociar colores solo si la cantidad es mayor a 0
+        // AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adir las entradas al ArrayList y asociar colores solo si la cantidad es mayor a 0
         ArrayList<Integer> colors = new ArrayList<>();
         for (String estado : estados) {
             int cantidad = cantidades.get(estado);
@@ -309,11 +316,11 @@ public class EstadisticasFragment extends Fragment {
             }
         }
 
-        // Si no hay entradas válidas, mostrar un mensaje de "No hay datos disponibles"
+        // Si no hay entradas vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas, mostrar un mensaje de "No hay datos disponibles"
         if (entries.isEmpty()) {
-            pieChart.clear(); // Limpia el gráfico si no hay datos
+            pieChart.clear(); // Limpia el grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico si no hay datos
             pieChart.setNoDataText("No hay datos disponibles para mostrar.");
-            pieChart.invalidate(); // Redibujar el gráfico con el mensaje de "No hay datos"
+            pieChart.invalidate(); // Redibujar el grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico con el mensaje de "No hay datos"
             return;
         }
 
@@ -327,18 +334,18 @@ public class EstadisticasFragment extends Fragment {
         pieDataSet.setValueTextColor(Color.BLACK);
 
         PieData pieData = new PieData(pieDataSet);
-        pieData.setValueTextColor(Color.BLACK); // Asegurar que el color del texto también sea negro
+        pieData.setValueTextColor(Color.BLACK); // Asegurar que el color del texto tambiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©n sea negro
         pieChart.setData(pieData);
 
-        // Configuración del fondo del gráfico
-        pieChart.setDrawHoleEnabled(false); // Elimina el agujero en el centro si está habilitado
-        pieChart.setDrawEntryLabels(true); // Asegura que las etiquetas estén visibles
+        // ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del fondo del grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico
+        pieChart.setDrawHoleEnabled(false); // Elimina el agujero en el centro si estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ habilitado
+        pieChart.setDrawEntryLabels(true); // Asegura que las etiquetas estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©n visibles
         pieChart.setEntryLabelColor(Color.BLACK); // Cambia el color de las etiquetas a negro
-        pieChart.setBackgroundColor(Color.WHITE); // Establece un fondo blanco para la gráfica
+        pieChart.setBackgroundColor(Color.WHITE); // Establece un fondo blanco para la grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fica
 
         pieChart.invalidate();
 
-        // Configuración de la leyenda
+        // ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la leyenda
         Legend legend = pieChart.getLegend();
         legend.setEnabled(true);
         legend.setTextColor(Color.BLACK); // Cambiar el color de la leyenda a negro
@@ -358,7 +365,7 @@ public class EstadisticasFragment extends Fragment {
         );
         cellParams.setMargins(8, 8, 8, 8); // Margen entre celdas
 
-        // Añadir las filas de datos
+        // AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adir las filas de datos
         for (int i = 0; i < data.length(); i++) {
             JSONObject estadoPedido = data.getJSONObject(i);
             String estado = estadoPedido.getString("estado");
@@ -400,9 +407,59 @@ public class EstadisticasFragment extends Fragment {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.error(requireActivity(), mensaje);
             }
         });
+    }
+
+    private void verificarVehiculoAsignadoThen(Runnable onOk) {
+        if (getActivity() == null) return;
+        final String urlVerificar = ApiConfig.BASE_URL + "/Pedidos_GA/App/verificar_vehiculo.php";
+        final String username = sharedPreferences.getString("username", "");
+
+        StringRequest request = new com.example.app_pedidos.network.Utf8StringRequest(Request.Method.POST, urlVerificar,
+                response -> {
+                    String body = response == null ? "" : response.trim().toUpperCase();
+                    if ("ASIGNADO".equals(body)) {
+                        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
+                            noVehiculoDialog.dismiss();
+                        }
+                        if (onOk != null) onOk.run();
+                    } else {
+                        mostrarDialogoSinVehiculo();
+                    }
+                },
+                error -> mostrarError("Error de conexiÃƒÆ’Ã‚Â³n")) {
+            @Override
+            protected java.util.Map<String, String> getParams() {
+                java.util.Map<String, String> p = new java.util.HashMap<>();
+                p.put("username", username);
+                return p;
+            }
+        };
+
+        Volley.newRequestQueue(requireContext()).add(request);
+    }
+
+    private void mostrarDialogoSinVehiculo() {
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) return;
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog);
+builder.setTitle("Vehiculo no asignado");
+builder.setMessage("Solicita a tu Jefe de choferes de Sucursal que te asigne un vehiculo para continuar");
+builder.setCancelable(false);
+builder.setPositiveButton("Cerrar sesion", (dialog, which) -> cerrarSesion());
+noVehiculoDialog = builder.create();
+noVehiculoDialog.setCanceledOnTouchOutside(false);
+noVehiculoDialog.show();
+    }
+
+    private void cerrarSesion() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("username");
+        editor.apply();
+        android.content.Intent intent = new android.content.Intent(requireContext(), LoginActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private String getCurrentMonth() {
@@ -420,11 +477,15 @@ public class EstadisticasFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Detener la actualización periódica
+        // Detener la actualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n periÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dica
         if (timer != null) {
             timer.cancel();
             timer = null;
         }
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) { noVehiculoDialog.dismiss(); }
         binding = null;
     }
 }
+
+
+

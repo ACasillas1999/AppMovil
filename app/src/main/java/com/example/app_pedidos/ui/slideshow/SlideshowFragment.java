@@ -23,13 +23,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.R;
+import com.example.app_pedidos.ApiConfig;
+import com.example.app_pedidos.ui.Login.LoginActivity;
 import com.example.app_pedidos.ui.Pedido.DetallePedidoActivity;
 
 import org.json.JSONArray;
@@ -41,11 +45,13 @@ import java.util.TimerTask;
 
 public class SlideshowFragment extends Fragment {
 
-    private static final String URL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Consultar.php";
+    // private static final String URL = "https://pedidos.grupoascencio.com.mx/Pedidos_GA/App/Consultar.php";
+    private static final String URL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php";
     private final long interval = 5000; // 5 segundos
     private Timer timer;
     private LinearLayout linearLayoutContainer;
     private JSONArray pedidosArray;
+    private AlertDialog noVehiculoDialog;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,9 +68,59 @@ public class SlideshowFragment extends Fragment {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                obtenerPedidos();
+                obtenerPedidosV2();
             }
         }, 0, interval);
+    }
+
+    private void obtenerPedidosV2() {
+        if (getActivity() == null) {
+            return;
+        }
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+
+        String urlWithParams = URL + "?username=" + username + "&v2=1";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                urlWithParams,
+                null,
+                response -> {
+                    if (!isAdded()) return;
+                    try {
+                        boolean vehiculoAsignado = response.optBoolean("vehiculo_asignado", true);
+                        if (!vehiculoAsignado) {
+                            mostrarBloqueoSinVehiculo();
+                            return;
+                        } else if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
+                            noVehiculoDialog.dismiss();
+                        }
+
+                        JSONArray arr = response.optJSONArray("pedidos");
+                        if (arr != null) {
+                            mostrarPedidos(arr);
+                        } else {
+                            if (linearLayoutContainer != null) linearLayoutContainer.removeAllViews();
+                        }
+                    } catch (Exception e) {
+                        Log.e("SlideshowFragment", "Error al procesar la respuesta", e);
+                        mostrarMensaje("Error al procesar datos");
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    Log.e("SlideshowFragment", "Error en la solicitud HTTP: " + error);
+                    if (isAdded()) {
+                        mostrarMensaje("Error en la solicitud HTTP");
+                    }
+                }
+        );
+
+        if (getContext() != null) {
+            Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
+        }
     }
 
     private void obtenerPedidos() {
@@ -358,7 +414,33 @@ public class SlideshowFragment extends Fragment {
     }
 
     private void mostrarMensaje(String mensaje) {
-        Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
+        com.example.app_pedidos.ui.common.Notifier.error(requireActivity(), mensaje);
+    }
+
+    private void mostrarBloqueoSinVehiculo() {
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
+            return;
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder =
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog);
+        builder.setTitle("Vehículo no asignado");
+        builder.setMessage("Solicita a tu Jefe de choferes de Sucursal que te asigne un vehículo para continuar");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Cerrar sesión", (dialog, which) -> cerrarSesionDesdeFragment());
+        noVehiculoDialog = builder.create();
+        noVehiculoDialog.setCanceledOnTouchOutside(false);
+        noVehiculoDialog.show();
+    }
+
+    private void cerrarSesionDesdeFragment() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("username");
+        editor.apply();
+
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     @Override
@@ -367,6 +449,9 @@ public class SlideshowFragment extends Fragment {
         if (timer != null) {
             timer.cancel();
             timer = null;
+        }
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
+            noVehiculoDialog.dismiss();
         }
     }
 }

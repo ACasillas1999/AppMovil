@@ -26,7 +26,11 @@
             app:showAsAction="always"
             android:title="" />
 
-
+        <item
+            android:id="@+id/nav_vehicle"
+            app:actionLayout="@layout/menu_item_image_view_vehicle"
+            app:showAsAction="always"
+            android:title="" />
 
     </group>
 </menu>

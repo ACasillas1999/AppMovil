@@ -54,6 +54,8 @@ dependencies {
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
+    // SweetAlert removed to avoid external dependency during compile
+
 
     // implementation("com.mapbox.mapboxsdk:")
 }

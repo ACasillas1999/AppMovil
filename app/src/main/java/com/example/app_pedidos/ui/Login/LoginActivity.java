@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                             iniciarMainActivity();
                         } else {
                             // Mostrar un mensaje de error si la autenticación falla
-                            Toast.makeText(LoginActivity.this, "Nombre de usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                            com.example.app_pedidos.ui.common.Notifier.error(LoginActivity.this, "Nombre de usuario o contraseña incorrectos");
                         }
                     }
                 },
@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Mostrar un mensaje de error si hay un error de conexión
-                        Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                        com.example.app_pedidos.ui.common.Notifier.connectionLost(LoginActivity.this, "Error de conexión", "Reintentar", () -> autenticarUsuario(username, password));
                     }
                 }) {
             // Parámetros POST
@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     // Método para iniciar MainActivity después de un inicio de sesión exitoso
     private void iniciarMainActivity() {
         // Mostrar un mensaje de éxito
-        Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+        com.example.app_pedidos.ui.common.Notifier.success(this, "Inicio de sesión exitoso");
 
         // Crear un intent para iniciar MainActivity
         Intent intent = new Intent(this, MainActivity.class);

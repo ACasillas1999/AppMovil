@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.Pedidos.MaterialAlertDialog</item>
     </style>
     <style name="Theme.App_Pedidos.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -19,4 +20,16 @@
     </style>
  <style name="Theme.App_Pedidos.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="Theme.App_Pedidos.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Rounded Material dialog overlay -->
+    <style name="ThemeOverlay.App.Pedidos.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.RoundedCorners</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.RoundedCorners</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.App.RoundedCorners</item>
+    </style>
+
+    <style name="ShapeAppearance.App.RoundedCorners" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
 </resources>

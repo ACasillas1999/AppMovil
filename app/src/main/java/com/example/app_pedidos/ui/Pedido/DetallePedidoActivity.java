@@ -35,7 +35,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.example.app_pedidos.R;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationRequest;
@@ -81,7 +83,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
     private long downloadId; // ID de la descarga
     private String pedidoId; // ID del pedido
     private boolean isDownloadReceiverRegistered = false;
-    private String pendingEstado = null; // Estado pendiente si falta permiso de ubicación
+    private String pendingEstado = null; // Estado pendiente si falta permiso de ubicacion
 
 
 
@@ -92,8 +94,8 @@ public class DetallePedidoActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             if (id == downloadId) {
-                // Manejar la descarga completada aquí
-                Toast.makeText(DetallePedidoActivity.this, "Documento descargado correctamente", Toast.LENGTH_SHORT).show();
+                // Manejar la descarga completada aquÃƒÆ’Ã‚Â­
+                com.example.app_pedidos.ui.common.Notifier.success(DetallePedidoActivity.this, "Documento descargado correctamente");
             }
         }
     };
@@ -122,7 +124,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
         yourButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Acción del botón
+                // Accion del boton
                 finish(); // Volver a la ventana anterior
             }
         });
@@ -137,12 +139,12 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     intent.putExtra("ID_PEDIDO", pedidoId);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(DetallePedidoActivity.this, "Por favor, ingrese un ID de pedido válido.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DetallePedidoActivity.this, "Por favor, ingrese un ID de pedido vÃƒÆ’Ã‚Â¡lido.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        // Eliminado manejo de LocationManager; se usará FusedLocation al solicitar coordenadas
+        // Eliminado manejo de LocationManager; se usarÃƒÆ’Ã‚Â¡ FusedLocation al solicitar coordenadas
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && !extras.isEmpty()) {
@@ -166,7 +168,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(coordenadasOrigen) && !TextUtils.isEmpty(coordenadasDestino)) {
                     openGoogleMaps(coordenadasOrigen, coordenadasDestino);
                 } else {
-                    Toast.makeText(DetallePedidoActivity.this, "No se encontraron coordenadas para abrir Google Maps", Toast.LENGTH_SHORT).show();
+                    com.example.app_pedidos.ui.common.Notifier.warn(DetallePedidoActivity.this, "No se encontraron coordenadas para abrir Google Maps");
                 }
             }
         });
@@ -211,7 +213,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             try {
                 unregisterReceiver(downloadCompleteReceiver);
             } catch (IllegalArgumentException ignored) {
-                // En caso de que ya no esté registrado
+                // En caso de que ya no estÃƒÆ’Ã‚Â© registrado
             }
             isDownloadReceiverRegistered = false;
         }
@@ -253,7 +255,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(DetallePedidoActivity.this, "Error al verificar la imagen", Toast.LENGTH_SHORT).show();
+                            com.example.app_pedidos.ui.common.Notifier.error(DetallePedidoActivity.this, "Error al verificar la imagen");
                         }
                     });
                 }
@@ -285,14 +287,14 @@ public class DetallePedidoActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(DetallePedidoActivity.this, "Error al procesar la respuesta del servidor", Toast.LENGTH_SHORT).show();
+                                com.example.app_pedidos.ui.common.Notifier.error(DetallePedidoActivity.this, "Error al procesar la respuesta del servidor");
                             }
                         });
                     }
                 }
             });
         } else {
-            Toast.makeText(this, "ID del pedido no válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ID del pedido no vÃƒÆ’Ã‚Â¡lido", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -328,10 +330,10 @@ public class DetallePedidoActivity extends AppCompatActivity {
             if (manager != null) {
                 downloadId = manager.enqueue(request);
             } else {
-                Toast.makeText(DetallePedidoActivity.this, "No se pudo iniciar la descarga", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.error(DetallePedidoActivity.this, "No se pudo iniciar la descarga");
             }
         } else {
-            Toast.makeText(DetallePedidoActivity.this, "No se encontró la ruta del documento", Toast.LENGTH_SHORT).show();
+            com.example.app_pedidos.ui.common.Notifier.error(DetallePedidoActivity.this, "No se encontró la ruta del documento");
         }
     }
 
@@ -377,7 +379,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
     }
 
     private void mostrarError() {
-        Toast.makeText(this, "Error: No se recibieron los detalles del pedido.", Toast.LENGTH_SHORT).show();
+        com.example.app_pedidos.ui.common.Notifier.error(this, "Error: No se recibieron los detalles del pedido.");
     }
 
     private void openGoogleMaps(String startCoordinates, String endCoordinates) {
@@ -393,7 +395,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             String googleMapsURL = "https://www.google.com/maps/dir/" + latitudStart + "," + longitudStart + "/" + latitudEnd + "," + longitudEnd;
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(googleMapsURL)));
         } else {
-            Toast.makeText(this, "No se encontraron coordenadas para abrir Google Maps", Toast.LENGTH_SHORT).show();
+            com.example.app_pedidos.ui.common.Notifier.warn(this, "No se encontraron coordenadas para abrir Google Maps");
         }
     }
 
@@ -419,7 +421,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                 @Override
                 public void onUbicacionObtenida(double latitude, double longitude) {
                     // Manejar las coordenadas obtenidas
-                    Toast.makeText(DetallePedidoActivity.this, "Ubicación obtenida: Latitud = " + latitude + ", Longitud = " + longitude, Toast.LENGTH_SHORT).show();
+                    com.example.app_pedidos.ui.common.Notifier.info(DetallePedidoActivity.this, "Ubicación obtenida: Latitud = " + latitude + ", Longitud = " + longitude);
                 }
             });
         }
@@ -434,7 +436,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 seleccionarImagenDeGaleria();
             } else {
-                Toast.makeText(this, "Se necesitan permisos de almacenamiento para seleccionar una imagen.", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Se necesitan permisos de almacenamiento para seleccionar una imagen.");
             }
         } else if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -444,7 +446,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     // Handle case where locationManager is null
                 }
             } else {
-                Toast.makeText(this, "Se necesitan permisos de ubicación para obtener la ubicación actual.", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Se necesitan permisos de ubicación para obtener la ubicación actual.");
             }
         }
     }*/
@@ -466,9 +468,9 @@ public class DetallePedidoActivity extends AppCompatActivity {
             verificarFotoDesdeServidor(btnTomarFoto);
             subirFotoAlServidor();
         } else if (requestCode == REQUEST_CHECK_SETTINGS) {
-            // El usuario volvió del diálogo de activar ubicación
+            // El usuario volvio del diÃƒÆ’Ã‚Â¡logo de activar ubicacion
             if (resultCode == RESULT_OK) {
-                // Reintentar la acción pendiente si existe
+                // Reintentar la accion pendiente si existe
                 if (pendingEstado != null) {
                     obtenerCoordenadaActualForzar((lat, lon) -> {
                         String coord = lat + ", " + lon;
@@ -477,7 +479,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     });
                 }
             } else {
-                Toast.makeText(this, "Para continuar, activa la ubicación", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Para continuar, activa la ubicación");
             }
         }
     }
@@ -523,7 +525,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(DetallePedidoActivity.this, "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                                    com.example.app_pedidos.ui.common.Notifier.error(DetallePedidoActivity.this, "Error al subir la imagen");
                                 }
                             });
                         }
@@ -535,25 +537,26 @@ public class DetallePedidoActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     savePhotoStatus(true); // Guardar estado de la foto cargada
-                                    Toast.makeText(DetallePedidoActivity.this, responseData, Toast.LENGTH_SHORT).show();
+                                    com.example.app_pedidos.ui.common.Notifier.success(DetallePedidoActivity.this, responseData);
                                 }
                             });
                         }
                     });
                 } else {
-                    Toast.makeText(this, "ID del pedido no válido", Toast.LENGTH_SHORT).show();
+                    com.example.app_pedidos.ui.common.Notifier.warn(this, "ID del pedido no válido");
                 }
             } else {
-                Toast.makeText(this, "No se pudo obtener la ruta de la imagen", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.error(this, "No se pudo obtener la ruta de la imagen");
             }
         } else {
-            Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show();
+            com.example.app_pedidos.ui.common.Notifier.warn(this, "No se seleccionó ninguna imagen");
         }
     }
 
     private void mostrarDialogoActualizarEstado() {
         final String[] estados = {"EN RUTA", "CANCELADO", "ENTREGADO", "EN TIENDA", "REPROGRAMADO"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder =
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog);
         builder.setTitle("Actualizar Estado")
                 .setItems(estados, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -565,39 +568,30 @@ public class DetallePedidoActivity extends AppCompatActivity {
     }
 
     private void confirmarCambioDeEstado(final String nuevoEstado) {
-        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
-        confirmDialog.setTitle("Confirmar Cambio de Estado");
-        confirmDialog.setMessage("¿Estás seguro de que deseas cambiar el estado a " + nuevoEstado + "?");
-        confirmDialog.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                obtenerCoordenadasParaActualizarEstado(nuevoEstado);
-            }
-        });
-        confirmDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss(); // Cierra el diálogo de confirmación si se elige "No"
-            }
-        });
-        confirmDialog.create().show();
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog)
+    .setTitle("Confirmar Cambio de Estado")
+    .setMessage("Deseas cambiar el estado a " + nuevoEstado + "?")
+    .setPositiveButton("Si", (dialog, which) -> obtenerCoordenadasParaActualizarEstado(nuevoEstado))
+    .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+    .setCancelable(false)
+    .show();
     }
 
 
     private void obtenerCoordenadaActual(OnUbicacionObtenidaListener listener) {
-        // Verificar permisos antes de intentar obtener la ubicación
+        // Verificar permisos antes de intentar obtener la ubicacion
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Mostrar una explicación si es necesario
+            // Mostrar una explicacion si es necesario
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 mostrarExplicacionYSolicitarPermiso();
             } else {
-                // Solicitar permisos si no están concedidos
+                // Solicitar permisos si no estÃƒÆ’Ã‚Â¡n concedidos
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
             }
-            return; // Salir del método mientras se esperan los permisos
+            return; // Salir del mÃƒÆ’Ã‚Â©todo mientras se esperan los permisos
         }
 
-        // Utilizar Fused Location Provider para obtener la última ubicación
+        // Utilizar Fused Location Provider para obtener la ÃƒÆ’Ã‚Âºltima ubicacion
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -607,24 +601,24 @@ public class DetallePedidoActivity extends AppCompatActivity {
                         // Notificar al listener con las coordenadas
                         listener.onUbicacionObtenida(latitude, longitude);
                     } else {
-                        // Manejar el caso en que la ubicación es nula
-                        Toast.makeText(this, "No se pudo obtener la ubicación actual", Toast.LENGTH_SHORT).show();
+                        // Manejar el caso en que la ubicacion es nula
+                        com.example.app_pedidos.ui.common.Notifier.warn(this, "No se pudo obtener la ubicación actual");
                     }
                 })
                 .addOnFailureListener(e -> {
                     // Manejar errores
-                    Toast.makeText(this, "Error al obtener ubicación: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    com.example.app_pedidos.ui.common.Notifier.error(this, "Error al obtener ubicación: " + e.getMessage());
                 });
     }
 
 
 
     public void onUbicacionObtenida(double latitude, double longitude) {
-        // Aquí manejas las coordenadas obtenidas, por ejemplo, actualizando la UI
-        Toast.makeText(this, "Ubicación obtenida: Latitud = " + latitude + ", Longitud = " + longitude, Toast.LENGTH_SHORT).show();
+        // AquÃƒÆ’Ã‚Â­ manejas las coordenadas obtenidas, por ejemplo, actualizando la UI
+        com.example.app_pedidos.ui.common.Notifier.info(this, "Ubicación obtenida: Latitud = " + latitude + ", Longitud = " + longitude);
     }
 
-    // Interfaz para manejar la ubicación obtenida
+    // Interfaz para manejar la ubicacion obtenida
     public interface OnUbicacionObtenidaListener {
         void onUbicacionObtenida(double latitude, double longitude);
     }
@@ -635,14 +629,14 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
 
     private void mostrarExplicacionYSolicitarPermiso() {
-        // Mostrar una explicación personalizada
-        new AlertDialog.Builder(this)
-                .setTitle("Permiso de ubicación necesario")
-                .setMessage("Esta aplicación necesita acceso a tu ubicación para poder ofrecerte todas sus funciones.")
+        // Mostrar una explicacion personalizada
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog)
+                .setTitle("Permiso de ubicacion necesario")
+                .setMessage("Se requiere acceso a tu ubicacion para actualizar el estado del pedido.")
                 .setPositiveButton("Aceptar", (dialog, which) ->
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION))
                 .setNegativeButton("Cancelar", (dialog, which) -> {
-                    // Acción cuando el usuario cancela
+                    // Accion cuando el usuario cancela
                     dialog.dismiss();
                 })
                 .create()
@@ -663,11 +657,11 @@ public class DetallePedidoActivity extends AppCompatActivity {
                 seleccionarImagenDeGaleria();
             } else {
                 // Permiso de almacenamiento denegado
-                Toast.makeText(this, "Se necesitan permisos de almacenamiento para seleccionar una imagen.", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Se necesitan permisos de almacenamiento para seleccionar una imagen.");
             }
         } else if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso de ubicación concedido: obtenemos coordenada y retomamos acción pendiente
+                // Permiso de ubicacion concedido: obtenemos coordenada y retomamos accion pendiente
                 obtenerCoordenadaActual((latitude, longitude) -> {
                     String coordenada = latitude + ", " + longitude;
                     if (pendingEstado != null) {
@@ -676,8 +670,8 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                // Permiso de ubicación denegado
-                Toast.makeText(this, "Se necesitan permisos de ubicación para obtener la ubicación actual.", Toast.LENGTH_SHORT).show();
+                // Permiso de ubicacion denegado
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Se necesitan permisos de ubicación para obtener la ubicación actual.");
             }
         }
     }
@@ -692,11 +686,11 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, puedes intentar obtener la ubicación nuevamente
+                // Permiso concedido, puedes intentar obtener la ubicacion nuevamente
                 obtenerCoordenadaActual();
             } else {
                 // Permiso denegado, manejar el caso de no tener permiso
-                Toast.makeText(this, "Se necesitan permisos de ubicación para continuar", Toast.LENGTH_SHORT).show();
+                com.example.app_pedidos.ui.common.Notifier.warn(this, "Se necesitan permisos de ubicación para continuar");
             }
         }
     }*/
@@ -705,7 +699,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
     private void obtenerCoordenadasParaActualizarEstado(final String nuevoEstado) {
         // Guardar el estado solicitado por si hay que pedir permisos primero
         pendingEstado = nuevoEstado;
-        // Intentar obtener la ubicación de manera robusta (forzando una lectura si es necesario)
+        // Intentar obtener la ubicacion de manera robusta (forzando una lectura si es necesario)
         obtenerCoordenadaActualForzar(new OnUbicacionObtenidaListener() {
             @Override
             public void onUbicacionObtenida(double latitude, double longitude) {
@@ -718,7 +712,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
         });
     }
 
-    // Variante robusta: si no hay última ubicación, intenta obtener una lectura actual o solicitar una actualización única
+    // Variante robusta: si no hay ÃƒÆ’Ã‚Âºltima ubicacion, intenta obtener una lectura actual o solicitar una actualizacion ÃƒÆ’Ã‚Âºnica
     private void obtenerCoordenadaActualForzar(OnUbicacionObtenidaListener listener) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -731,7 +725,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Intentar obtener ubicación actual directa
+        // Intentar obtener ubicacion actual directa
         com.google.android.gms.tasks.CancellationTokenSource cts = new com.google.android.gms.tasks.CancellationTokenSource();
         fusedLocationClient.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, cts.getToken())
                 .addOnSuccessListener(loc -> {
@@ -760,7 +754,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                         @Override
                         public void onLocationResult(com.google.android.gms.location.LocationResult locationResult) {
                             if (locationResult == null || locationResult.getLastLocation() == null) {
-                                Toast.makeText(DetallePedidoActivity.this, "No se pudo obtener la ubicación actual", Toast.LENGTH_SHORT).show();
+                                com.example.app_pedidos.ui.common.Notifier.warn(DetallePedidoActivity.this, "No se pudo obtener la ubicación actual");
                                 return;
                             }
                             double lat = locationResult.getLastLocation().getLatitude();
@@ -776,10 +770,10 @@ public class DetallePedidoActivity extends AppCompatActivity {
                         try {
                             ((com.google.android.gms.common.api.ResolvableApiException) e).startResolutionForResult(DetallePedidoActivity.this, REQUEST_CHECK_SETTINGS);
                         } catch (Exception ex) {
-                            Toast.makeText(DetallePedidoActivity.this, "Activa la ubicación para continuar", Toast.LENGTH_SHORT).show();
+                            com.example.app_pedidos.ui.common.Notifier.warn(DetallePedidoActivity.this, "Activa la ubicación para continuar");
                         }
                     } else {
-                        Toast.makeText(DetallePedidoActivity.this, "Activa la ubicación para continuar", Toast.LENGTH_SHORT).show();
+                        com.example.app_pedidos.ui.common.Notifier.warn(DetallePedidoActivity.this, "Activa la ubicación para continuar");
                     }
                 });
     }
@@ -791,7 +785,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             RequestBody formBody = new FormBody.Builder()
                     .add("id", pedidoId)
                     .add("estado", nuevoEstado)
-                    .add("coordenada", coordenada) // Agregar la coordenada aquí
+                    .add("coordenada", coordenada) // Agregar la coordenada aquÃƒÆ’Ã‚Â­
                     .build();
 
             Request request = new Request.Builder()
@@ -808,7 +802,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(DetallePedidoActivity.this, "Error al actualizar el estado", Toast.LENGTH_SHORT).show();
+                            com.example.app_pedidos.ui.common.Notifier.connectionLost(DetallePedidoActivity.this, "Error de conexión al actualizar", "Reintentar", () -> actualizarEstadoPedido(nuevoEstado, coordenada));
                         }
                     });
                 }
@@ -819,13 +813,13 @@ public class DetallePedidoActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(DetallePedidoActivity.this, responseData, Toast.LENGTH_SHORT).show();
+                            com.example.app_pedidos.ui.common.Notifier.success(DetallePedidoActivity.this, responseData);
                         }
                     });
                 }
             });
         } else {
-            Toast.makeText(this, "ID del pedido no válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ID del pedido no vÃƒÆ’Ã‚Â¡lido", Toast.LENGTH_SHORT).show();
         }
     }
 

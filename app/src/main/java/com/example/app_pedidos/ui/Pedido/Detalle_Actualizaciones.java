@@ -95,7 +95,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Manejar el error
-                        Toast.makeText(Detalle_Actualizaciones.this, "Error al obtener los detalles del pedido: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        com.example.app_pedidos.ui.common.Notifier.error(Detalle_Actualizaciones.this, "Error al obtener los detalles del pedido: " + error.getMessage());
                     }
                 });
 
@@ -175,7 +175,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Error al procesar los detalles del pedido", Toast.LENGTH_LONG).show();
+            com.example.app_pedidos.ui.common.Notifier.error(this, "Error al procesar los detalles del pedido");
         }
     }
 
@@ -196,7 +196,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Manejar el error
-                        Toast.makeText(Detalle_Actualizaciones.this, "Error al obtener la imagen del pedido: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        com.example.app_pedidos.ui.common.Notifier.error(Detalle_Actualizaciones.this, "Error al obtener la imagen del pedido: " + error.getMessage());
                     }
                 });
 
@@ -231,7 +231,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
             imageView.setOnClickListener(v -> mostrarImagenCompleta(rutaImagen));
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Error al procesar la respuesta para la imagen del pedido", Toast.LENGTH_LONG).show();
+            com.example.app_pedidos.ui.common.Notifier.error(this, "Error al procesar la respuesta para la imagen del pedido");
         }
     }
 
