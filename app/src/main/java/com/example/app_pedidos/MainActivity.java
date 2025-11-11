@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
                         com.example.app_pedidos.ui.common.Notifier.error(this, "Error al guardar");
                     }
                 },
-                error -> Toast.makeText(this, "Error de conexiÃ³n", Toast.LENGTH_SHORT).show()) {
+                error -> Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show()) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> p = new HashMap<>();

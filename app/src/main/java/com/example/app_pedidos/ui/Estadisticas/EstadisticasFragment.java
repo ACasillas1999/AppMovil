@@ -247,7 +247,7 @@ public class EstadisticasFragment extends Fragment {
                             mostrarSinDatos();
                             return;
                         }
-                        mostrarError("Problema de conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n. Intenta de nuevo.");
+                        mostrarError("Problema de conexión. Intenta de nuevo.");
                     }
                 }
         );
@@ -477,7 +477,7 @@ noVehiculoDialog.show();
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Detener la actualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n periÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dica
+        // Detener la actualización periódica
         if (timer != null) {
             timer.cancel();
             timer = null;

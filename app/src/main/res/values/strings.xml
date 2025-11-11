@@ -41,4 +41,18 @@
 
     <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1IjoiYWNhc2lsbGFzNzY2IiwiYSI6ImNsdnk4bXFqejJtajUybG1nNGVqMTF6eXEifQ.6jPJtF0lGWi1t8T70rxXlQ</string>
     <string name="tomar_foto">Tomar Foto</string>
+    <string name="descargar_documento">Descargar documento</string>
+    <string name="ver_detalles">Ver detalles</string>
+    <string name="abrir_google_maps">Abrir Google Maps</string>
+    <string name="desc_volver">Volver</string>
+    <!-- Login -->
+    <string name="login_nombre_usuario">Nombre de usuario:</string>
+    <string name="login_hint_usuario">Ingresa tu nombre de usuario</string>
+    <string name="login_contrasena">Contraseña:</string>
+    <string name="login_hint_contrasena">Ingresa tu contraseña</string>
+    <string name="login_iniciar_sesion">Iniciar sesión</string>
+    <!-- Estadísticas -->
+    <string name="mes_actual">Mes actual</string>
+    <string name="mes_anterior">Mes anterior</string>
+    <string name="resumen">Resumen</string>
 </resources>

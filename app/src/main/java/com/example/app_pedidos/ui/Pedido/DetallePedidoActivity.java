@@ -94,7 +94,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             if (id == downloadId) {
-                // Manejar la descarga completada aquÃƒÆ’Ã‚Â­
+                // Manejar la descarga completada aqui
                 com.example.app_pedidos.ui.common.Notifier.success(DetallePedidoActivity.this, "Documento descargado correctamente");
             }
         }
@@ -144,7 +144,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             }
         });
 
-        // Eliminado manejo de LocationManager; se usarÃƒÆ’Ã‚Â¡ FusedLocation al solicitar coordenadas
+        // Eliminado manejo de LocationManager; se usara FusedLocation al solicitar coordenadas
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && !extras.isEmpty()) {
@@ -213,7 +213,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             try {
                 unregisterReceiver(downloadCompleteReceiver);
             } catch (IllegalArgumentException ignored) {
-                // En caso de que ya no estÃƒÆ’Ã‚Â© registrado
+                // En caso de que ya no esta registrado
             }
             isDownloadReceiverRegistered = false;
         }
@@ -294,7 +294,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(this, "ID del pedido no vÃƒÆ’Ã‚Â¡lido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ID del pedido no valido", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -468,7 +468,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
             verificarFotoDesdeServidor(btnTomarFoto);
             subirFotoAlServidor();
         } else if (requestCode == REQUEST_CHECK_SETTINGS) {
-            // El usuario volvio del diÃƒÆ’Ã‚Â¡logo de activar ubicacion
+            // El usuario volvio del dialogo de activar ubicacion
             if (resultCode == RESULT_OK) {
                 // Reintentar la accion pendiente si existe
                 if (pendingEstado != null) {
@@ -585,13 +585,13 @@ public class DetallePedidoActivity extends AppCompatActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 mostrarExplicacionYSolicitarPermiso();
             } else {
-                // Solicitar permisos si no estÃƒÆ’Ã‚Â¡n concedidos
+                // Solicitar permisos si no estan concedidos
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
             }
-            return; // Salir del mÃƒÆ’Ã‚Â©todo mientras se esperan los permisos
+            return; // Salir del metodo mientras se esperan los permisos
         }
 
-        // Utilizar Fused Location Provider para obtener la ÃƒÆ’Ã‚Âºltima ubicacion
+        // Utilizar Fused Location Provider para obtener la ultima ubicacion
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -614,7 +614,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
 
 
     public void onUbicacionObtenida(double latitude, double longitude) {
-        // AquÃƒÆ’Ã‚Â­ manejas las coordenadas obtenidas, por ejemplo, actualizando la UI
+        // Aqui manejas las coordenadas obtenidas, por ejemplo, actualizando la UI
         com.example.app_pedidos.ui.common.Notifier.info(this, "Ubicación obtenida: Latitud = " + latitude + ", Longitud = " + longitude);
     }
 
@@ -712,7 +712,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
         });
     }
 
-    // Variante robusta: si no hay ÃƒÆ’Ã‚Âºltima ubicacion, intenta obtener una lectura actual o solicitar una actualizacion ÃƒÆ’Ã‚Âºnica
+    // Variante robusta: si no hay ultima ubicacion, intenta obtener una lectura actual o solicitar una actualizacion ÃƒÆ’Ã‚Âºnica
     private void obtenerCoordenadaActualForzar(OnUbicacionObtenidaListener listener) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -819,7 +819,7 @@ public class DetallePedidoActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(this, "ID del pedido no vÃƒÆ’Ã‚Â¡lido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ID del pedido no valido", Toast.LENGTH_SHORT).show();
         }
     }
 

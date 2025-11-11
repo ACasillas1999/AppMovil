@@ -10,7 +10,7 @@
         android:id="@+id/month_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mes Actual"
+        android:text="@string/mes_actual"
         android:textAllCaps="true"
         android:textAppearance="@drawable/constdogr"
         android:textSize="18sp"
@@ -28,20 +28,22 @@
         <Button
             android:id="@+id/previous_month_button"
             android:layout_width="133dp"
-            android:layout_height="28dp"
+            android:layout_height="48dp"
             android:layout_gravity="start"
             android:background="@drawable/mespana"
-            android:paddingBottom="8dp"
+            android:contentDescription="@string/mes_anterior"
+            android:tooltipText="@string/mes_anterior"
             android:rotationY="0" />
 
     <Button
         android:id="@+id/current_month_button"
         android:layout_width="133dp"
-        android:layout_height="28dp"
+        android:layout_height="48dp"
         android:layout_gravity="end"
         android:background="@drawable/mesactna"
         android:insetLeft="0dp"
-        android:paddingBottom="16dp" />
+        android:contentDescription="@string/mes_actual"
+        android:tooltipText="@string/mes_actual" />
 
    </FrameLayout>
 
@@ -65,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="Resumen"
+        android:text="@string/resumen"
         android:textAllCaps="true"
         android:textAppearance="@drawable/constdogr"
         android:textSize="18sp"

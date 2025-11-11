@@ -10,14 +10,14 @@
         android:id="@+id/imageViewTop"
         android:layout_width="200dp"
         android:paddingTop="100dp"
-    android:layout_height="wrap_content"
-    android:adjustViewBounds="true"
-    android:scaleType="centerCrop"
-    android:src="@drawable/login_new"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="25dp" />
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_new"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="25dp" />
 
     <!-- Centrar_ interaface -->
     <androidx.constraintlayout.widget.Guideline
@@ -32,7 +32,7 @@
         android:id="@+id/textViewUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nombre de usuario:"
+        android:text="@string/login_nombre_usuario"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/imageViewTop"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:hint="Ingresa tu nombre de usuario"
+        android:hint="@string/login_hint_usuario"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/textViewUsername"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
         android:id="@+id/textViewPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contraseña:"
+        android:text="@string/login_contrasena"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/editTextUsername"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
-        android:hint="Ingresa tu contraseña"
+        android:hint="@string/login_hint_contrasena"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/textViewPassword"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +84,7 @@
         android:id="@+id/buttonLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Iniciar sesión"
+        android:text="@string/login_iniciar_sesion"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/editTextPassword"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,3 +106,4 @@
         app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
