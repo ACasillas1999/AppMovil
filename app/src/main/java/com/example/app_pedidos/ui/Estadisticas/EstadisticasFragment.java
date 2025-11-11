@@ -243,7 +243,7 @@ public class EstadisticasFragment extends Fragment {
                             }
                         }
                         if (error instanceof com.android.volley.ParseError) {
-                            // Cuerpo vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o o no JSON: trÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡talo como sin datos
+                            // Cuerpo vacio o no JSON: tratalo como sin datos
                             mostrarSinDatos();
                             return;
                         }
@@ -429,7 +429,7 @@ public class EstadisticasFragment extends Fragment {
                         mostrarDialogoSinVehiculo();
                     }
                 },
-                error -> mostrarError("Error de conexiÃƒÆ’Ã‚Â³n")) {
+                error -> mostrarError("Error de conexion")) {
             @Override
             protected java.util.Map<String, String> getParams() {
                 java.util.Map<String, String> p = new java.util.HashMap<>();

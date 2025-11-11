@@ -317,7 +317,7 @@ public class HomeFragment extends Fragment {
 // Crear y configurar imageOrderTitle
         ImageView imageOrderTitle = new ImageView(requireContext());
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
-                200, // Ancho en pi­xeles
+                200, 200
 
         );
         imageParams.setMargins(0,0,0,0);
