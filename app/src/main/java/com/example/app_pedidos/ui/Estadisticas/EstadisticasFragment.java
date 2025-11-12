@@ -117,7 +117,7 @@ public class EstadisticasFragment extends Fragment {
             }
         });
 
-        // Configurar el botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para volver al mes actual
+        // Configurar el boton para volver al mes actual
         currentMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
