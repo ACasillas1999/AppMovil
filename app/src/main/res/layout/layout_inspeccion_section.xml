@@ -9,48 +9,120 @@
         android:id="@+id/section_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sección"
+        android:text="SECCIÓN"
         android:textStyle="bold"
         android:textSize="16sp"
         android:paddingTop="8dp"
         android:paddingBottom="4dp" />
 
+    <!-- Encabezado de columnas para alinear con los RadioButtons de los ítems -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="2" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Bien"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Mal"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="N/A"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Fila de 'Marcar toda la sección' debajo del encabezado -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:baselineAligned="false"
         android:paddingBottom="6dp">
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="2"
             android:text="Marcar toda la sección:"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:includeFontPadding="false" />
 
         <RadioGroup
             android:id="@+id/group_all_section"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="horizontal"
-            android:layout_marginLeft="8dp">
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:weightSum="3">
             <RadioButton
                 android:id="@+id/opt_all_bien"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Bien" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:text=""
+                android:contentDescription="Bien"
+                android:buttonTint="@color/rb_bien_tint" />
             <RadioButton
                 android:id="@+id/opt_all_mal"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Mal"
-                android:layout_marginLeft="12dp" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:text=""
+                android:contentDescription="Mal"
+                android:buttonTint="@color/rb_mal_tint" />
             <RadioButton
                 android:id="@+id/opt_all_na"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="N/A"
-                android:layout_marginLeft="12dp" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:text=""
+                android:contentDescription="N/A"
+                android:buttonTint="@color/rb_na_tint" />
         </RadioGroup>
     </LinearLayout>
 
@@ -61,4 +133,3 @@
         android:orientation="vertical" />
 
 </LinearLayout>
-

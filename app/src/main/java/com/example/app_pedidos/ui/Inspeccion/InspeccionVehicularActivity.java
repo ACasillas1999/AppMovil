@@ -76,9 +76,9 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
                 "Estado de Tablero / Indicadores operativos",
                 "Freno de mano (NN)*",
                 "Freno de servicio (NN)*",
-                "Cinturón de seguridad Chofer (NN)*",
-                "Cinturón de seguridad copiloto (NN)*",
-                "Cinturón de seguridad asiento posterior (NN)*",
+                "CinturÃ³n de seguridad Chofer (NN)*",
+                "CinturÃ³n de seguridad copiloto (NN)*",
+                "CinturÃ³n de seguridad asiento posterior (NN)*",
                 "Espejo retrovisor antideslumbrante",
                 "Linterna de mano"
         }));
@@ -91,8 +91,8 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
                 "Extintor"
         }));
         secciones.add(new Seccion("TAPAS Y OTROS", new String[]{
-                "Tapa de tanque de gasolina y/o petróleo",
-                "Gata hidráulica"
+                "Tapa de tanque de gasolina y/o petrÃ³leo",
+                "Gata hidrÃ¡ulica"
         }));
         secciones.add(new Seccion("ROTULADO", new String[]{
                 "Rotulado general"
@@ -122,10 +122,9 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
                 itemViewMap.put(item, itemView.findViewById(R.id.item_root));
                 rg.setOnCheckedChangeListener((group, checkedId) -> {
                     RadioButton rbSel = group.findViewById(checkedId);
-                    String cal = rbSel == null ? null : rbSel.getText().toString();
-                    if ("Mal".equals(cal)) { obs.setVisibility(View.VISIBLE); }
-                    else { obs.setText(""); obs.setVisibility(View.GONE); }
-                    // Edición manual desmarca el flag auto
+                    String cal = rbSel == null ? null : valueOf(rbSel);
+                    setObsRequired(obs, "Mal".equals(cal));
+                    // EdiciÃ³n manual desmarca el flag auto
                     itemAutoMap.put(item, false);
                     applyAutoStyle(item, false);
                 });
@@ -141,10 +140,9 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
                         checkValueOnGroup(rg, val);
                         EditText obs = itemObsMap.get(it);
                         if (obs != null) {
-                            if ("Mal".equals(val)) { obs.setVisibility(View.VISIBLE); }
-                            else { obs.setText(""); obs.setVisibility(View.GONE); }
+                            setObsRequired(obs, "Mal".equals(val));
                         }
-                        // Marcar como asignado por sección
+                        // Marcar como asignado por secciÃ³n
                         itemAutoMap.put(it, true);
                         applyAutoStyle(it, true);
                     }
@@ -162,7 +160,7 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
             View v = rg.getChildAt(i);
             if (v instanceof RadioButton) {
                 RadioButton rb = (RadioButton) v;
-                if (val.equals(rb.getText().toString())) { rb.setChecked(true); return; }
+                if (val.equals(valueOf(rb))) { rb.setChecked(true); return; }
             }
         }
     }
@@ -179,14 +177,14 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
         for (Map.Entry<Item, RadioGroup> e : itemRadioMap.entrySet()) {
             Item it = e.getKey(); RadioGroup rg = e.getValue();
             int sel = rg.getCheckedRadioButtonId();
-            if (sel == -1) { ok = false; if (first == null) { first = it; firstMsg = "Hay ítems sin calificación. Revisa: "+it.item; } continue; }
+            if (sel == -1) { ok = false; if (first == null) { first = it; firstMsg = "Hay Ã­tems sin calificaciÃ³n. Revisa: "+it.item; } continue; }
             RadioButton rb = rg.findViewById(sel);
-            String cal = rb==null?null:rb.getText().toString();
+            String cal = rb==null?null:valueOf(rb);
             if ("Mal".equals(cal)) {
                 EditText obs = itemObsMap.get(it);
                 String txt = obs==null?null:obs.getText().toString().trim();
                 if (txt==null || txt.isEmpty()) {
-                    ok = false; if (first == null) { first = it; firstMsg = "Falta observación para ítem en estado 'Mal': "+it.item; }
+                    ok = false; if (first == null) { first = it; firstMsg = "Falta observaciÃ³n para Ã­tem en estado 'Mal': "+it.item; }
                     if (obs != null) obs.setError("Requerido si es 'Mal'");
                 }
             }
@@ -207,7 +205,7 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
             body.put("username", username); if (km>=0) body.put("kilometraje", km); body.put("fecha_inspeccion", fecha);
             for (Map.Entry<Item, RadioGroup> e : itemRadioMap.entrySet()) {
                 Item it = e.getKey(); RadioGroup rg = e.getValue(); int sel = rg.getCheckedRadioButtonId();
-                RadioButton rb = rg.findViewById(sel); String cal = rb==null?null:rb.getText().toString();
+                RadioButton rb = rg.findViewById(sel); String cal = rb==null?null:valueOf(rb);
                 JSONObject o = new JSONObject(); o.put("seccion", it.seccion); o.put("item", it.item); o.put("calificacion", cal);
                 if ("Mal".equals(cal)) {
                     EditText obs = itemObsMap.get(it);
@@ -220,8 +218,8 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
         } catch (JSONException ex) { Notifier.error(this, "Error al preparar datos"); return; }
         Utf8JsonObjectRequest req = new Utf8JsonObjectRequest(
                 Request.Method.POST, url, body,
-                response -> { if (response.optBoolean("ok", false)) { Notifier.success(this, "Inspección guardada"); setResult(RESULT_OK); finish(); } else { Notifier.error(this, response.optString("error","No se pudo guardar")); } },
-                error -> Notifier.connectionLost(this, "Error de conexión", "Reintentar", this::enviarChecklist)
+                response -> { if (response.optBoolean("ok", false)) { Notifier.success(this, "InspecciÃ³n guardada"); setResult(RESULT_OK); finish(); } else { Notifier.error(this, response.optString("error","No se pudo guardar")); } },
+                error -> Notifier.connectionLost(this, "Error de conexiÃ³n", "Reintentar", this::enviarChecklist)
         );
         Volley.newRequestQueue(this).add(req);
     }
@@ -241,4 +239,25 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
         Seccion(String n, String[] it){ nombre=n; items=it; }
     }
     static class Item { final String seccion,item; final boolean critico; Item(String s,String i,boolean c){ seccion=s; item=i; critico=c; } }
-}
+
+    private String valueOf(RadioButton rb) {
+        if (rb == null) return null;
+        CharSequence t = rb.getText();
+        if (t != null && t.length() > 0) return t.toString();
+        CharSequence cd = rb.getContentDescription();
+        if (cd != null && cd.length() > 0) return cd.toString();
+        Object tag = rb.getTag();
+        return tag != null ? tag.toString() : null;
+    }
+
+    private void setObsRequired(EditText obs, boolean required) {
+        if (obs == null) return;
+        if (required) {
+            obs.setVisibility(View.VISIBLE);
+            obs.setHint("Motivo (obligatorio)");
+        } else {
+            obs.setText("");
+            obs.setVisibility(View.GONE);
+            obs.setHint("Describe la observación (requerida si es Mal)");
+        }
+    }}

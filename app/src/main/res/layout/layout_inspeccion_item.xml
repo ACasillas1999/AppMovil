@@ -6,38 +6,63 @@
     android:orientation="vertical"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:baselineAligned="false">
 
         <TextView
             android:id="@+id/item_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="Item"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
         <RadioGroup
             android:id="@+id/item_group"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="3">
             <RadioButton
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Bien" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:contentDescription="Bien"
+                android:buttonTint="@color/rb_bien_tint" />
             <RadioButton
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Mal"
-                android:layout_marginLeft="12dp" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:contentDescription="Mal"
+                android:buttonTint="@color/rb_mal_tint" />
             <RadioButton
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="N/A"
-                android:layout_marginLeft="12dp" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:singleLine="true"
+                android:minWidth="56dp"
+                android:contentDescription="N/A"
+                android:buttonTint="@color/rb_na_tint" />
         </RadioGroup>
     </LinearLayout>
 
@@ -50,6 +75,6 @@
         android:inputType="textCapSentences|textMultiLine"
         android:minLines="2"
         android:maxLines="4"
-        android:paddingTop="4dp"/>
+        android:paddingTop="4dp" />
 
 </LinearLayout>

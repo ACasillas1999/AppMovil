@@ -41,12 +41,12 @@ public class InspeccionHoyActivity extends AppCompatActivity {
         Utf8JsonObjectRequest req = new Utf8JsonObjectRequest(
                 Request.Method.GET, url, null,
                 resp -> {
-                    if (!resp.optBoolean("ok", false)) { Notifier.info(this, "Sin inspecciÃ³n de hoy"); return; }
+                    if (!resp.optBoolean("ok", false)) { Notifier.info(this, "Sin inspecciÃƒÂ³n de hoy"); return; }
                     JSONArray items = resp.optJSONArray("items");
-                    if (items == null || items.length() == 0) { Notifier.info(this, "Sin inspecciÃ³n de hoy"); return; }
+                    if (items == null || items.length() == 0) { Notifier.info(this, "Sin inspecciÃƒÂ³n de hoy"); return; }
                     render(items);
                 },
-                err -> Notifier.connectionLost(this, "Error de conexiÃ³n", "Reintentar", this::cargarDatos)
+                err -> Notifier.connectionLost(this, "Error de conexiÃƒÂ³n", "Reintentar", this::cargarDatos)
         );
         Volley.newRequestQueue(this).add(req);
     }
@@ -78,19 +78,19 @@ public class InspeccionHoyActivity extends AppCompatActivity {
             TextView val = row.findViewById(R.id.item_value);
             lbl.setText(item);
             val.setText(cal);
-            // Colores por calificación
+            // Colores por calificaciÃ³n
             if ("Mal".equalsIgnoreCase(cal)) { val.setTextColor(0xFFAA0000); }
             else if ("Bien".equalsIgnoreCase(cal)) { val.setTextColor(0xFF0A7D00); }
             else { val.setTextColor(0xFF666666); }
-            // Estilo para marcados por secciÃ³n
-            if (auto) { lbl.setText(lbl.getText() + " (marcado por secciÃ³n)"); lbl.setTextColor(0xFF5555AA); }
+            // Estilo para marcados por secciÃƒÂ³n
+            if (auto) { lbl.setText(lbl.getText() + " (marcado por secciÃƒÂ³n)"); lbl.setTextColor(0xFF5555AA); }
             TextView tvObs = row.findViewById(R.id.item_obs);
             String obsTrim = (obs == null) ? "" : obs.trim();
             boolean hasObs = !(obsTrim.isEmpty() || "null".equalsIgnoreCase(obsTrim));
             if ("Mal".equalsIgnoreCase(cal)) {
-                // Mostrar siempre la observación cuando está en "Mal"
-                // Usar texto sin acento para evitar símbolos raros en algunas codificaciones
-                tvObs.setText("Observacion: " + (hasObs ? obsTrim : ""));
+                // Mostrar siempre la observaciÃ³n cuando estÃ¡ en "Mal"
+                // Usar texto sin acento para evitar sÃ­mbolos raros en algunas codificaciones
+                tvObs.setText("Observación: " + (hasObs ? obsTrim : ""));
                 tvObs.setVisibility(View.VISIBLE);
             } else {
                 tvObs.setVisibility(View.GONE);
@@ -99,4 +99,5 @@ public class InspeccionHoyActivity extends AppCompatActivity {
         }
     }
 }
+
 
