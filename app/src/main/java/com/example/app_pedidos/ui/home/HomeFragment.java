@@ -3,20 +3,25 @@ package com.example.app_pedidos.ui.home;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -26,43 +31,176 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.R;
-import com.example.app_pedidos.ui.Login.LoginActivity;
 import com.example.app_pedidos.ui.Pedido.DetallePedidoActivity;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.app_pedidos.ui.Login.LoginActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
 
     private static final String URL = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php";
-    private final long interval = 5000; // 5 segundos
-    private final Handler refreshHandler = new Handler(Looper.getMainLooper());
-    private Runnable refreshRunnable;
-    private RecyclerView recyclerPedidos;
-    private TextView emptyView;
-    private PedidosAdapter adapter;
+    private final long interval = 5000;
+    private Timer timer;
+    private LinearLayout linearLayoutContainer;
     private JSONArray pedidosArray;
     private AlertDialog noVehiculoDialog;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        recyclerPedidos = root.findViewById(R.id.recyclerPedidos);
-        emptyView = root.findViewById(R.id.emptyView);
+        linearLayoutContainer = root.findViewById(R.id.linearLayoutContainer);
+        iniciarActualizacionPeriodica();
+        return root;
+    }
 
-        adapter = new PedidosAdapter(position -> {
+    private void iniciarActualizacionPeriodica() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override public void run() { obtenerPedidosV2(); }
+        }, 0, interval);
+    }
+
+    private void obtenerPedidosV2() {
+        SharedPreferences sp = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+        String username = sp.getString("username", "");
+        String url = URL + "?username=" + encode(username) + "&v2=1";
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        boolean vehiculoAsignado = response.optBoolean("vehiculo_asignado", true);
+                        if (!vehiculoAsignado) { mostrarBloqueoSinVehiculo(); return; }
+                        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) noVehiculoDialog.dismiss();
+                        JSONArray arr = response.optJSONArray("pedidos");
+                        if (arr == null || arr.length() == 0) mostrarListaVacia(); else mostrarPedidos(arr);
+                    } catch (Exception e) {
+                        Log.e("HomeFragment", "Error al procesar la respuesta", e);
+                        mostrarMensaje("Error al procesar datos");
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    if (error.networkResponse != null) {
+                        int code = error.networkResponse.statusCode;
+                        if (code == 204 || code == 404) { mostrarListaVacia(); return; }
+                    }
+                    mostrarMensaje("Problema de conexión. Intenta de nuevo.");
+                });
+
+        Volley.newRequestQueue(requireContext()).add(req);
+    }
+
+    private String encode(String v) { try { return URLEncoder.encode(v, "UTF-8"); } catch (Exception e) { return v; } }
+
+    private void mostrarListaVacia() {
+        if (getActivity() == null) return;
+        requireActivity().runOnUiThread(() -> {
+            linearLayoutContainer.removeAllViews();
+            TextView empty = new TextView(requireContext());
+            empty.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            empty.setText("No hay pedidos para mostrar.");
+            empty.setTextSize(16);
+            empty.setTextColor(Color.DKGRAY);
+            empty.setPadding(24,24,24,24);
+            linearLayoutContainer.addView(empty);
+        });
+    }
+
+    private void mostrarPedidos(JSONArray response) {
+        pedidosArray = response;
+        try {
+            linearLayoutContainer.removeAllViews();
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject pedido = response.getJSONObject(i);
+                String estado = pedido.optString("ESTADO", "");
+                if ("ACTIVO".equals(estado) || "EN RUTA".equals(estado) || "REPROGRAMADO".equals(estado) || "EN TIENDA".equals(estado)) {
+                    agregarPedidoALayout(pedido);
+                }
+            }
+        } catch (JSONException e) { e.printStackTrace(); }
+    }
+
+    private void agregarPedidoALayout(final JSONObject pedido) throws JSONException {
+        CardView cardView = new CardView(requireContext());
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        cardParams.setMargins(0,0,0,16);
+        cardView.setLayoutParams(cardParams);
+        cardView.setRadius(16);
+
+        String estado = pedido.getString("ESTADO");
+        if ("ACTIVO".equals(estado)) cardView.setCardBackgroundColor(Color.parseColor("#CCE5FF"));
+        else if ("EN RUTA".equals(estado)) cardView.setCardBackgroundColor(Color.parseColor("#FFD699"));
+        else if ("REPROGRAMADO".equals(estado)) cardView.setCardBackgroundColor(Color.parseColor("#E6CCFF"));
+        else if ("EN TIENDA".equals(estado)) cardView.setCardBackgroundColor(Color.parseColor("#FFFFCC"));
+        else cardView.setCardBackgroundColor(Color.WHITE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) cardView.setElevation(8);
+
+        LinearLayout linearLayout = new LinearLayout(requireContext());
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(16,16,16,16);
+
+        TextView textOrderId = new TextView(requireContext());
+        textOrderId.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        textOrderId.setText("ID: " + pedido.getString("ID"));
+        textOrderId.setTextSize(16);
+
+        ImageView imageOrderTitle = new ImageView(requireContext());
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(200,200);
+        imageOrderTitle.setLayoutParams(imageParams);
+        String sucursal = pedido.optString("SUCURSAL", "");
+        int imgRes;
+        switch (sucursal) {
+            case "DEASA": imgRes = R.drawable.deasaazz; break;
+            case "DIMEGSA": imgRes = R.drawable.dimegsa; break;
+            case "AIESA": imgRes = R.drawable.aiesa; break;
+            case "SEGSA": imgRes = R.drawable.segsa; break;
+            case "FESA": imgRes = R.drawable.fesa; break;
+            case "TAPATIA": imgRes = R.drawable.eitsa; break;
+            case "GABSA": imgRes = R.drawable.gabl; break;
+            case "ILUMINACION": imgRes = R.drawable.ilum; break;
+            case "VALLARTA": imgRes = R.drawable.gabl; break;
+            default: imgRes = R.drawable.gabl; break;
+        }
+        imageOrderTitle.setImageResource(imgRes);
+        int filterColor;
+        switch (estado) {
+            case "ACTIVO": filterColor = Color.parseColor("#576977"); break;
+            case "EN RUTA": filterColor = Color.parseColor("#7A5D3D"); break;
+            case "REPROGRAMADO": filterColor = Color.parseColor("#715C5B"); break;
+            case "EN TIENDA": filterColor = Color.parseColor("#78785E"); break;
+            default: filterColor = Color.WHITE; break;
+        }
+        imageOrderTitle.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
+
+        TextView textOrderDetails = new TextView(requireContext());
+        textOrderDetails.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        textOrderDetails.setText("Cliente: " + pedido.optString("NOMBRE_CLIENTE", ""));
+        textOrderDetails.setTextSize(16);
+
+        TextView textOrderState = new TextView(requireContext());
+        textOrderState.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        textOrderState.setText("Estado: " + estado);
+        textOrderState.setTextSize(16);
+
+        TextView textOrderDate = new TextView(requireContext());
+        textOrderDate.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        textOrderDate.setText("Fecha Recepcion: " + pedido.optString("FECHA_RECEPCION_FACTURA", ""));
+        textOrderDate.setTextSize(16);
+
+        Button btnVerDetalle = new Button(requireContext());
+        btnVerDetalle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        btnVerDetalle.setText("Ver Detalles");
+        btnVerDetalle.setOnClickListener(v -> {
             try {
-                if (pedidosArray == null) return;
-                JSONObject pedidoSeleccionado = pedidosArray.getJSONObject(position);
-                if (pedidoSeleccionado.has("ID") && pedidoSeleccionado.has("SUCURSAL")
-                        && pedidoSeleccionado.has("NOMBRE_CLIENTE") && pedidoSeleccionado.has("ESTADO")
-                        && pedidoSeleccionado.has("FECHA_RECEPCION_FACTURA")) {
+                JSONObject pedidoSeleccionado = pedidosArray.getJSONObject(linearLayoutContainer.indexOfChild((View) v.getParent().getParent()));
+                if (pedidoSeleccionado.has("ID") && pedidoSeleccionado.has("SUCURSAL") && pedidoSeleccionado.has("NOMBRE_CLIENTE") && pedidoSeleccionado.has("ESTADO") && pedidoSeleccionado.has("FECHA_RECEPCION_FACTURA")) {
                     Intent intent = new Intent(requireContext(), DetallePedidoActivity.class);
                     intent.putExtra("ID", pedidoSeleccionado.getString("ID"));
                     intent.putExtra("SUCURSAL", pedidoSeleccionado.getString("SUCURSAL"));
@@ -86,182 +224,17 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("Coord_Destino", pedidoSeleccionado.optString("Coord_Destino", ""));
                     startActivity(intent);
                 }
-            } catch (JSONException e) {
-                Log.e("HomeFragment", "Error al procesar JSON: " + e.getMessage());
-            }
+            } catch (JSONException e) { e.printStackTrace(); }
         });
 
-        recyclerPedidos.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerPedidos.setAdapter(adapter);
-
-        refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                obtenerPedidosV2();
-                refreshHandler.postDelayed(this, interval);
-            }
-        };
-
-        return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        refreshHandler.removeCallbacksAndMessages(null);
-        refreshHandler.post(refreshRunnable);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        refreshHandler.removeCallbacksAndMessages(null);
-    }
-
-    private void obtenerPedidosV2() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
-
-        String urlWithParams = URL + "?username=" + encode(username) + "&v2=1";
-
-        JsonObjectRequest jsonObjectRequest = new com.example.app_pedidos.network.Utf8JsonObjectRequest(
-                Request.Method.GET,
-                urlWithParams,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            boolean vehiculoAsignado = response.optBoolean("vehiculo_asignado", true);
-                            if (!vehiculoAsignado) {
-                                mostrarBloqueoSinVehiculo();
-                                return;
-                            } else {
-                                if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
-                                    noVehiculoDialog.dismiss();
-                                }
-                            }
-
-                            JSONArray arr = response.optJSONArray("pedidos");
-                            if (arr == null || arr.length() == 0) {
-                                mostrarListaVacia();
-                            } else {
-                                mostrarPedidos(arr);
-                            }
-                        } catch (Exception e) {
-                            Log.e("HomeFragment", "Error al procesar la respuesta", e);
-                            mostrarMensaje("Error al procesar datos");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Log.e("HomeFragment", "Error en la solicitud HTTP: " + error.toString());
-                        if (error.networkResponse != null) {
-                            int code = error.networkResponse.statusCode;
-                            if (code == 204 || code == 404) {
-                                mostrarListaVacia();
-                                return;
-                            }
-                        }
-                        mostrarMensaje("Problema de conexión. Intenta de nuevo.");
-                    }
-                }
-        );
-
-        Volley.newRequestQueue(requireContext()).add(jsonObjectRequest);
-    }
-
-    private void obtenerPedidos() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
-
-        String urlWithParams = URL + "?username=" + encode(username);
-
-        JsonArrayRequest jsonArrayRequest = new com.example.app_pedidos.network.Utf8JsonArrayRequest(
-                Request.Method.GET,
-                urlWithParams,
-                null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        if (response == null || response.length() == 0) {
-                            mostrarListaVacia();
-                        } else {
-                            mostrarPedidos(response);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Log.e("HomeFragment", "Error en la solicitud HTTP: " + error.toString());
-                        if (error.networkResponse != null) {
-                            int code = error.networkResponse.statusCode;
-                            if (code == 204 || code == 404) {
-                                mostrarListaVacia();
-                                return;
-                            }
-                        }
-                        mostrarMensaje("Problema de conexión. Intenta de nuevo.");
-                    }
-                }
-        );
-
-        Volley.newRequestQueue(requireContext()).add(jsonArrayRequest);
-    }
-
-    private String encode(String value) {
-        try {
-            return URLEncoder.encode(value, "UTF-8");
-        } catch (Exception e) {
-            return value;
-        }
-    }
-
-    private void mostrarListaVacia() {
-        if (getActivity() == null) return;
-        requireActivity().runOnUiThread(() -> {
-            emptyView.setVisibility(View.VISIBLE);
-            recyclerPedidos.setVisibility(View.GONE);
-            if (adapter != null) adapter.submitList(java.util.Collections.emptyList());
-        });
-    }
-
-    private void mostrarPedidos(JSONArray response) {
-        pedidosArray = response; // Guardar JSON para detalles
-        List<Pedido> list = new ArrayList<>();
-        try {
-            for (int i = 0; i < response.length(); i++) {
-                final JSONObject pedido = response.getJSONObject(i);
-                String estado = pedido.optString("ESTADO", "");
-                if ("ACTIVO".equals(estado) || "EN RUTA".equals(estado) || "REPROGRAMADO".equals(estado) || "EN TIENDA".equals(estado)) {
-                    list.add(new Pedido(
-                            pedido.optString("ID", ""),
-                            pedido.optString("SUCURSAL", ""),
-                            pedido.optString("NOMBRE_CLIENTE", ""),
-                            estado,
-                            pedido.optString("FECHA_RECEPCION_FACTURA", "")
-                    ));
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final List<Pedido> finalList = list;
-        requireActivity().runOnUiThread(() -> {
-            if (finalList.isEmpty()) {
-                emptyView.setVisibility(View.VISIBLE);
-                recyclerPedidos.setVisibility(View.GONE);
-            } else {
-                emptyView.setVisibility(View.GONE);
-                recyclerPedidos.setVisibility(View.VISIBLE);
-            }
-            adapter.submitList(finalList);
-        });
+        linearLayout.addView(imageOrderTitle);
+        linearLayout.addView(textOrderId);
+        linearLayout.addView(textOrderDetails);
+        linearLayout.addView(textOrderState);
+        linearLayout.addView(textOrderDate);
+        linearLayout.addView(btnVerDetalle);
+        cardView.addView(linearLayout);
+        linearLayoutContainer.addView(cardView);
     }
 
     private void mostrarMensaje(String mensaje) {
@@ -269,9 +242,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void mostrarBloqueoSinVehiculo() {
-        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
-            return;
-        }
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) return;
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_Pedidos_MaterialAlertDialog);
         builder.setTitle("Vehiculo no asignado");
         builder.setMessage("Solicita a tu Jefe de choferes de Sucursal que te asigne un vehiculo para continuar");
@@ -283,12 +254,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void cerrarSesionDesdeHome() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences sp = requireActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
         editor.remove("username");
         editor.apply();
-
-        com.example.app_pedidos.ui.common.Notifier.info(requireActivity(), "Sesión cerrada exitosamente");
+        com.example.app_pedidos.ui.common.Notifier.info(requireActivity(), "Sesi��n cerrada exitosamente");
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         startActivity(intent);
         requireActivity().finish();
@@ -297,10 +267,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        refreshHandler.removeCallbacksAndMessages(null);
-        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) {
-            noVehiculoDialog.dismiss();
-        }
+        if (timer != null) { timer.cancel(); timer = null; }
+        if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) noVehiculoDialog.dismiss();
     }
 }
-

@@ -18,29 +18,24 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Lista de pedidos con RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerPedidos"
-        android:layout_width="0dp"
+    <!-- ScrollView con LinearLayout -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_pedido" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Vista vacía -->
-    <TextView
-        android:id="@+id/emptyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No hay pedidos para mostrar."
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"/>
+        <LinearLayout
+            android:id="@+id/linearLayoutContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
