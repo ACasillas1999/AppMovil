@@ -4,6 +4,6 @@ public final class ApiConfig {
     private ApiConfig() {}
 
     // Base de la URL para todas las peticiones HTTP
-    public static final String BASE_URL = "https://22c78fe21884.ngrok-free.app";
+    public static final String BASE_URL = "http://192.168.60.194";
 }
 
