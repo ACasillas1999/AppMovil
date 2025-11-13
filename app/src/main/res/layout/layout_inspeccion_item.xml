@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Item"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/item_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bien" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mal"
+                android:layout_marginLeft="12dp" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="N/A"
+                android:layout_marginLeft="12dp" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/item_observacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Describe la observación (requerida si es Mal)"
+        android:visibility="gone"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minLines="2"
+        android:maxLines="4"
+        android:paddingTop="4dp"/>
+
+</LinearLayout>

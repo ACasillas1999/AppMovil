@@ -38,6 +38,17 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
 
+        // Aviso si se cerró por cambio de vehículo (banner persistente)
+        SharedPreferences sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        boolean vehicleChanged = sp.getBoolean("vehicle_changed", false);
+        View banner = findViewById(R.id.bannerVehicleChanged);
+        if (vehicleChanged && banner != null) {
+            banner.setVisibility(View.VISIBLE);
+            sp.edit().remove("vehicle_changed").apply();
+        } else if (banner != null) {
+            banner.setVisibility(View.GONE);
+        }
+
         // Acción cuando se hace clic en el botón de inicio de sesión
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override

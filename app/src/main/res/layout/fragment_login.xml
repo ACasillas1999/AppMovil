@@ -27,6 +27,23 @@
         app:layout_constraintGuide_begin="100dp"
         android:orientation="vertical" />
 
+    <!-- Banner aviso de cambio de vehículo -->
+    <TextView
+        android:id="@+id/bannerVehicleChanged"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Tu vehículo asignado cambió. Valida kilometraje e inspección."
+        android:textColor="#0D47A1"
+        android:background="#BBDEFB"
+        android:padding="12dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/imageViewTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"/>
+
     <!-- Nombre de usuario -->
     <TextView
         android:id="@+id/textViewUsername"
@@ -34,7 +51,7 @@
         android:layout_height="wrap_content"
         android:text="@string/login_nombre_usuario"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/imageViewTop"
+        app:layout_constraintTop_toBottomOf="@id/bannerVehicleChanged"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
@@ -106,4 +123,3 @@
         app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

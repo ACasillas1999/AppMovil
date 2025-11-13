@@ -53,32 +53,39 @@ try {
     $stLast->free_result();
     $stLast->close();
 
-    $needs = true;
+    // Reglas: solicitar diariamente a partir de las 08:00, excepto los domingos
+    $needs = false;
     $lastFecha = null;
     $lastKm = null;
 
     if ($hasLast) {
         $lastFecha = $fecha;
         $lastKm = is_null($kmFin) ? null : (int)$kmFin;
+    }
 
-        $hoy = new DateTime('today');
-        $f = DateTime::createFromFormat('Y-m-d', substr((string)$lastFecha, 0, 10));
+    // Determinar si hoy (excepto domingo) ya se registró y si es después de las 08:00
+    $hoy = new DateTime();
+    $esDomingo = ((int)$hoy->format('N') === 7); // 7 = Domingo en ISO-8601
 
-        // Verificar si hoy es lunes
-        $esLunes = ((int)$hoy->format('N') === 1); // 1 = Lunes en ISO-8601
-
-        if ($esLunes) {
-            // Si es lunes, verificar si ya registró esta semana (desde el lunes)
-            $lunesActual = (clone $hoy)->modify('monday this week');
-            if ($f && $f >= $lunesActual) {
-                $needs = false; // Ya registró esta semana
-            }
+    if (!$esDomingo) {
+        // ¿Existe registro hoy?
+        $sqlHoy = 'SELECT 1 FROM registro_kilometraje WHERE id_vehiculo = ? AND DATE(fecha_registro) = CURDATE() LIMIT 1';
+        $stHoy = $conn->prepare($sqlHoy);
+        if ($stHoy) {
+            $stHoy->bind_param('i', $idVehiculo);
+            $stHoy->execute();
+            $stHoy->store_result();
+            $tieneHoy = $stHoy->fetch();
+            $stHoy->free_result();
+            $stHoy->close();
         } else {
-            // Si no es lunes, verificar si registró desde el lunes de esta semana
-            $lunesActual = (clone $hoy)->modify('monday this week');
-            if ($f && $f >= $lunesActual) {
-                $needs = false; // Ya registró desde el lunes
-            }
+            $tieneHoy = false;
+        }
+
+        // Hora local del servidor
+        $hora = (int)$hoy->format('H');
+        if (!$tieneHoy && $hora >= 8) {
+            $needs = true; // Requerir después de las 08:00 si no se ha registrado hoy
         }
     }
 

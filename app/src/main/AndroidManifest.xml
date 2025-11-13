@@ -43,6 +43,18 @@
             android:theme="@style/Theme.App_Pedidos.NoActionBar" />
 
         <activity
+            android:name=".ui.Inspeccion.InspeccionVehicularActivity"
+            android:exported="false"
+            android:label="Inspección de vehículo"
+            android:theme="@style/Theme.App_Pedidos" />
+
+        <activity
+            android:name=".ui.Inspeccion.InspeccionHoyActivity"
+            android:exported="false"
+            android:label="Inspección de hoy"
+            android:theme="@style/Theme.App_Pedidos" />
+
+        <activity
             android:name=".ui.Pedido.DetallePedidoActivity"
             android:label="DetallePedidoActivity"
             android:exported="true" />

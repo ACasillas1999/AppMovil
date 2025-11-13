@@ -20,7 +20,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.app_pedidos.ApiConfig;
 import com.example.app_pedidos.R;
-
+import android.widget.Button;
+import android.content.Intent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,6 +53,12 @@ public class VehicleFragment extends Fragment {
         tvSucursal = root.findViewById(R.id.tv_sucursal);
         tvKmActual = root.findViewById(R.id.tv_km_actual);
         tvNoVehiculo = root.findViewById(R.id.tv_no_vehiculo);
+
+        Button verHoy = root.findViewById(R.id.btn_ver_inspeccion_hoy);
+        verHoy.setOnClickListener(v -> {
+            Intent i = new Intent(requireContext(), com.example.app_pedidos.ui.Inspeccion.InspeccionHoyActivity.class);
+            startActivity(i);
+        });
 
         // Obtener datos del vehículo
         obtenerDatosVehiculo();
@@ -194,3 +201,4 @@ public class VehicleFragment extends Fragment {
         Log.d(TAG, "VehicleFragment destruido");
     }
 }
+
