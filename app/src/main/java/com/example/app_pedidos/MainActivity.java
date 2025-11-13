@@ -66,6 +66,12 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        // Navegar a un destino solicitado externamente (por ejemplo, desde InspeccionHoyActivity)
+        int openDest = getIntent().getIntExtra("OPEN_DEST", -1);
+        if (openDest != -1) {
+            try { navController.navigate(openDest); } catch (Exception ignored) {}
+        }
+
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
             if (destinationId == R.id.nav_home) toolbarLogo.setImageResource(R.drawable.pedprobl);
