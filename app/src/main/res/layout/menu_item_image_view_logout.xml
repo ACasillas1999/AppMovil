@@ -7,14 +7,14 @@
     android:gravity="center_vertical">
 
     <TextView
-        android:id="@+id/text_view_menu_item_vehicle"
+        android:id="@+id/text_view_menu_item_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mi Vehículo"
+        android:text="Cerrar sesión"
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="#1565C0"
-        android:drawableLeft="@android:drawable/ic_menu_mylocation"
+        android:drawableLeft="@android:drawable/ic_lock_power_off"
         android:drawablePadding="12dp" />
 
 </LinearLayout>

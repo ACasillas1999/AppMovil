@@ -33,6 +33,16 @@ public class LoginActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.fragment_login);
 
+        // Si ya hay una sesin activa, saltar la pantalla de login
+        SharedPreferences spAuto = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        String savedUser = spAuto.getString("username", "");
+        if (savedUser != null && !savedUser.trim().isEmpty()) {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+            finish();
+            return;
+        }
+
         // Referencias a los elementos de la interfaz
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);

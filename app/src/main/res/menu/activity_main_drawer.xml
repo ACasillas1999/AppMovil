@@ -33,6 +33,12 @@
             android:title="" />
 
     </group>
+
+    <item
+        android:id="@+id/nav_logout"
+        app:actionLayout="@layout/menu_item_image_view_logout"
+        app:showAsAction="never"
+        android:title="" />
 </menu>
 
 

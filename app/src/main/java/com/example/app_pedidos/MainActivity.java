@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_logout) { cerrarSesion(); return true; }
+            boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
+            if (handled) binding.drawerLayout.closeDrawers();
+            return handled;
+        });
 
         // Navegar a un destino solicitado externamente (por ejemplo, desde InspeccionHoyActivity)
         int openDest = getIntent().getIntExtra("OPEN_DEST", -1);
