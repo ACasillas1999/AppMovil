@@ -217,6 +217,9 @@ public class GrupoRutaActivity extends AppCompatActivity {
         TextView tEstado = new TextView(this);
         tEstado.setText("Estado: " + estado);
         tEstado.setTextSize(16);
+        TextView tFechaRecep = new TextView(this);
+        tFechaRecep.setText("Fecha Recepcion: " + pedido.optString("FECHA_RECEPCION_FACTURA", ""));
+        tFechaRecep.setTextSize(16);
 
         Button btn = new Button(this);
         btn.setText("Ver Detalles");
@@ -270,6 +273,7 @@ public class GrupoRutaActivity extends AppCompatActivity {
         if (tOrden != null) card.addView(tOrden);
         card.addView(tCliente);
         card.addView(tEstado);
+        card.addView(tFechaRecep);
         card.addView(btn);
         cardView.addView(card);
         container.addView(cardView);
