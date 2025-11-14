@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
         toolbarLogo = binding.appBarMain.toolbar.findViewById(R.id.toolbar_logo);
 
         DrawerLayout drawer = binding.drawerLayout;
+        // Bloquear el cajón hasta pasar validaciones (comportamiento original)
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         NavigationView navigationView = binding.navView;
 

@@ -211,6 +211,12 @@ public class SlideshowFragment extends Fragment {
         }
 
         // Establecer la elevación para que los pedidos tengan sombra
+        // Alinear colores de fondo con Home (sobrescribe si aplica)
+        if ("ACTIVO".equals(estado)) { cardView.setCardBackgroundColor(Color.parseColor("#CCE5FF")); }
+        else if ("EN RUTA".equals(estado)) { cardView.setCardBackgroundColor(Color.parseColor("#FFD699")); }
+        else if ("REPROGRAMADO".equals(estado)) { cardView.setCardBackgroundColor(Color.parseColor("#E6CCFF")); }
+        else if ("EN TIENDA".equals(estado)) { cardView.setCardBackgroundColor(Color.parseColor("#FFFFCC")); }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             cardView.setElevation(8);
         }
@@ -364,14 +370,8 @@ public class SlideshowFragment extends Fragment {
         textOrderDate.setText("Fecha Recepción: " + pedido.getString("FECHA_RECEPCION_FACTURA"));
         textOrderDate.setTextSize(16);
 
-        // Crear el botón Ver Detalles
-        Button btnVerDetalle = new Button(getContext());
-        btnVerDetalle.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
-        btnVerDetalle.setText("Ver Detalles");
-                btnVerDetalle.setOnClickListener(v -> {
+        // Hacer clickable toda la tarjeta
+        cardView.setOnClickListener(v -> {
             if (!isAdded()) return;
             try {
                 JSONObject g = pedido.optJSONObject("grupo");
@@ -391,8 +391,8 @@ public class SlideshowFragment extends Fragment {
                 intent.putExtra("FECHA_ENTREGA_CLIENTE", pedido.optString("FECHA_ENTREGA_CLIENTE", ""));
                 intent.putExtra("CHOFER_ASIGNADO", pedido.optString("CHOFER_ASIGNADO", ""));
                 intent.putExtra("VENDEDOR", pedido.optString("VENDEDOR", ""));
-                intent.putExtra("FACTURA", pedido.optString("FACTURA", ""));
-                intent.putExtra("DIRECCION", pedido.optString("DIRECCION", ""));
+                intent.putExtra("FACTURA", pedido.getString("FACTURA"));
+                intent.putExtra("DIRECCION", pedido.getString("DIRECCION"));
                 intent.putExtra("FECHA_MIN_ENTREGA", pedido.optString("FECHA_MIN_ENTREGA", ""));
                 intent.putExtra("FECHA_MAX_ENTREGA", pedido.optString("FECHA_MAX_ENTREGA", ""));
                 intent.putExtra("MIN_VENTANA_HORARIA_1", pedido.optString("MIN_VENTANA_HORARIA_1", ""));
@@ -410,20 +410,14 @@ public class SlideshowFragment extends Fragment {
             }
         });
 
-        // Agregar los elementos al LinearLayout
 
+        // Agregar vistas al contenedor de la tarjeta (alineado con Home)
         linearLayout.addView(imageOrderTitle);
-        linearLayout.addView(textOrderTitle);
-
         linearLayout.addView(textOrderId);
         if (textGroup != null) { linearLayout.addView(textGroup); }
-        //linearLayout.addView(textOrderTitle);
         linearLayout.addView(textOrderDetails);
         linearLayout.addView(textOrderState);
         linearLayout.addView(textOrderDate);
-
-        // Agregar el botón al LinearLayout
-        linearLayout.addView(btnVerDetalle);
 
         // Agregar el LinearLayout al CardView
         cardView.addView(linearLayout);

@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:clickable="false"
+    android:focusable="false">
 
     <TextView
         android:id="@+id/text_view_menu_item_logout"
@@ -15,7 +17,9 @@
         android:textStyle="bold"
         android:textColor="#1565C0"
         android:drawableLeft="@android:drawable/ic_lock_power_off"
-        android:drawablePadding="12dp" />
+        android:drawablePadding="12dp"
+        android:clickable="false"
+        android:focusable="false" />
 
 </LinearLayout>
 

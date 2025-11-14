@@ -5,7 +5,9 @@
     android:orientation="horizontal"
     android:padding="16dp"
     android:layout_gravity="start"
-    android:gravity="center">
+    android:gravity="center"
+    android:clickable="false"
+    android:focusable="false">
 
 
 
@@ -14,6 +16,8 @@
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
-        android:src="@drawable/histaz" />
+        android:src="@drawable/histaz"
+        android:clickable="false"
+        android:focusable="false" />
 
 </LinearLayout>

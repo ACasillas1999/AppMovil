@@ -139,6 +139,8 @@ public class HomeFragment extends Fragment {
                 String id = p.optString("ID", "");
                 if (id.isEmpty()) continue;
                 String estado = p.optString("ESTADO", "");
+                String lastKey = "notif_last_estado_" + id;
+                String lastEstado = sp.getString(lastKey, "");
 
                 boolean isCompleted = "ENTREGADO".equalsIgnoreCase(estado) || "COMPLETADO".equalsIgnoreCase(estado) || "FINALIZADO".equalsIgnoreCase(estado);
                 if (isCompleted) {
@@ -146,6 +148,8 @@ public class HomeFragment extends Fragment {
                         try { com.example.app_pedidos.util.NotificationHelper.cancelForPedido(requireContext(), Integer.parseInt(id)); } catch (Exception ignore) {}
                         toKeep.remove(id);
                     }
+                    // limpiar estado memorizado
+                    sp.edit().remove(lastKey).apply();
                     continue;
                 }
 
@@ -153,12 +157,21 @@ public class HomeFragment extends Fragment {
                     if (!active.contains(id)) {
                         com.example.app_pedidos.util.NotificationHelper.notifyEnRuta(requireContext(), p);
                         toKeep.add(id);
+                        sp.edit().putString(lastKey, estado).apply();
                     } else {
-                        com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                        // Actualizar solo si cambió el estado
+                        if (!estado.equalsIgnoreCase(lastEstado)) {
+                            com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                            sp.edit().putString(lastKey, estado).apply();
+                        }
                     }
                 } else {
                     if (active.contains(id)) {
-                        com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                        // Actualizar solo si cambió el estado
+                        if (!estado.equalsIgnoreCase(lastEstado)) {
+                            com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                            sp.edit().putString(lastKey, estado).apply();
+                        }
                         toKeep.add(id);
                     }
                 }
@@ -269,15 +282,12 @@ public class HomeFragment extends Fragment {
         textOrderDate.setText("Fecha Recepcion: " + pedido.optString("FECHA_RECEPCION_FACTURA", ""));
         textOrderDate.setTextSize(16);
 
-        Button btnVerDetalle = new Button(requireContext());
-        btnVerDetalle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        btnVerDetalle.setText("Ver Detalles");
-        btnVerDetalle.setOnClickListener(v -> {
+        // Hacer que toda la tarjeta funcione como botón
+        cardView.setOnClickListener(v -> {
             try {
-                JSONObject pedidoSeleccionado = pedidosArray.getJSONObject(linearLayoutContainer.indexOfChild((View) v.getParent().getParent()));
+                JSONObject pedidoSeleccionado = pedido; // usar el mismo objeto del cierre
                 JSONObject g = pedidoSeleccionado.optJSONObject("grupo");
                 if (g != null && g.optInt("id", 0) > 0) {
-                    // Ir a pantalla de grupo
                     Intent gi = new Intent(requireContext(), com.example.app_pedidos.ui.Pedido.GrupoRutaActivity.class);
                     gi.putExtra("GRUPO_ID", g.optInt("id", 0));
                     gi.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
@@ -315,7 +325,6 @@ public class HomeFragment extends Fragment {
         linearLayout.addView(textOrderDetails);
         linearLayout.addView(textOrderState);
         linearLayout.addView(textOrderDate);
-        linearLayout.addView(btnVerDetalle);
         cardView.addView(linearLayout);
         linearLayoutContainer.addView(cardView);
     }

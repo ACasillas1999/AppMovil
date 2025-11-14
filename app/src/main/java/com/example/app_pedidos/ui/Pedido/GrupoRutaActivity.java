@@ -137,15 +137,13 @@ public class GrupoRutaActivity extends AppCompatActivity {
         cardView.setCardElevation(8);
 
         String estado = pedido.optString("ESTADO", "");
-        // Mismos colores que Home/Historial
+        // Mismos colores que Home/Historial (otros estados en blanco)
         int bgColor;
         switch (estado) {
             case "ACTIVO": bgColor = Color.parseColor("#CCE5FF"); break;
             case "EN RUTA": bgColor = Color.parseColor("#FFD699"); break;
             case "REPROGRAMADO": bgColor = Color.parseColor("#E6CCFF"); break;
             case "EN TIENDA": bgColor = Color.parseColor("#FFFFCC"); break;
-            case "ENTREGADO": bgColor = Color.parseColor("#C8E6C9"); break;
-            case "CANCELADO": bgColor = Color.parseColor("#FFCDD2"); break;
             default: bgColor = Color.WHITE; break;
         }
         cardView.setCardBackgroundColor(bgColor);
@@ -188,27 +186,22 @@ public class GrupoRutaActivity extends AppCompatActivity {
         tId.setTextSize(16);
         tId.setTypeface(tId.getTypeface(), Typeface.BOLD);
 
-        // Mostrar Orden dentro del grupo si existe
+        // Texto de grupo igual a Home: "Grupo #id: nombre (orden N)"
         int orden = extraerOrden(pedido);
-        TextView tOrden = null;
-        if (orden != Integer.MAX_VALUE) {
-            tOrden = new TextView(this);
-            tOrden.setText("Orden: " + orden);
-            tOrden.setTextSize(14);
-            tOrden.setTextColor(Color.parseColor("#1565C0"));
-            tOrden.setTypeface(tOrden.getTypeface(), Typeface.BOLD);
-        }
-
-        // Chip con ID del grupo
-        TextView chipGrupo = new TextView(this);
-        chipGrupo.setText("Grupo #" + Math.max(grupoId, 0));
-        chipGrupo.setTextSize(12);
-        chipGrupo.setTextColor(Color.WHITE);
-        chipGrupo.setPadding(20, 8, 20, 8);
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor("#1565C0"));
-        bg.setCornerRadius(24);
-        chipGrupo.setBackground(bg);
+        TextView textGroup = null;
+        try {
+            JSONObject grupoObj = pedido.optJSONObject("grupo");
+            if (grupoObj != null || grupoId > 0) {
+                textGroup = new TextView(this);
+                String nombreGrupo = (grupoObj != null) ? grupoObj.optString("nombre", "") : headerNombre.getText().toString();
+                int gid = (grupoObj != null) ? grupoObj.optInt("id", grupoId) : grupoId;
+                String label = "Grupo" + (gid > 0 ? " #" + gid : "") + ": " + nombreGrupo + (orden != Integer.MAX_VALUE ? " (orden " + orden + ")" : "");
+                textGroup.setText(label);
+                textGroup.setTextSize(14);
+                textGroup.setTypeface(textGroup.getTypeface(), Typeface.BOLD);
+                textGroup.setTextColor(Color.parseColor("#1565C0"));
+            }
+        } catch (Exception ignore) {}
 
         TextView tCliente = new TextView(this);
         tCliente.setText("Cliente: " + pedido.optString("NOMBRE_CLIENTE", ""));
@@ -220,6 +213,40 @@ public class GrupoRutaActivity extends AppCompatActivity {
         TextView tFechaRecep = new TextView(this);
         tFechaRecep.setText("Fecha Recepcion: " + pedido.optString("FECHA_RECEPCION_FACTURA", ""));
         tFechaRecep.setTextSize(16);
+
+        // Hacer toda la tarjeta clicable como en Home/Historial
+        cardView.setClickable(true);
+        cardView.setOnClickListener(v -> {
+            Intent intent = new Intent(GrupoRutaActivity.this, DetallePedidoActivity.class);
+            intent.putExtra("ID", pedido.optString("ID", ""));
+            intent.putExtra("SUCURSAL", pedido.optString("SUCURSAL", ""));
+            intent.putExtra("NOMBRE_CLIENTE", pedido.optString("NOMBRE_CLIENTE", ""));
+            intent.putExtra("ESTADO", pedido.optString("ESTADO", ""));
+            intent.putExtra("FECHA_RECEPCION_FACTURA", pedido.optString("FECHA_RECEPCION_FACTURA", ""));
+            intent.putExtra("FECHA_ENTREGA_CLIENTE", pedido.optString("FECHA_ENTREGA_CLIENTE", ""));
+            intent.putExtra("CHOFER_ASIGNADO", pedido.optString("CHOFER_ASIGNADO", ""));
+            intent.putExtra("VENDEDOR", pedido.optString("VENDEDOR", ""));
+            intent.putExtra("FACTURA", pedido.optString("FACTURA", ""));
+            intent.putExtra("DIRECCION", pedido.optString("DIRECCION", ""));
+            intent.putExtra("FECHA_MIN_ENTREGA", pedido.optString("FECHA_MIN_ENTREGA", ""));
+            intent.putExtra("FECHA_MAX_ENTREGA", pedido.optString("FECHA_MAX_ENTREGA", ""));
+            intent.putExtra("MIN_VENTANA_HORARIA_1", pedido.optString("MIN_VENTANA_HORARIA_1", ""));
+            intent.putExtra("MAX_VENTANA_HORARIA_1", pedido.optString("MAX_VENTANA_HORARIA_1", ""));
+            intent.putExtra("TELEFONO", pedido.optString("TELEFONO", ""));
+            intent.putExtra("CONTACTO", pedido.optString("CONTACTO", ""));
+            intent.putExtra("COMENTARIOS", pedido.optString("COMENTARIOS", ""));
+            intent.putExtra("Ruta", pedido.optString("Ruta", ""));
+            intent.putExtra("Coord_Origen", pedido.optString("Coord_Origen", ""));
+            intent.putExtra("Coord_Destino", pedido.optString("Coord_Destino", ""));
+            // Pasar datos de grupo si están
+            JSONObject g = pedido.optJSONObject("grupo");
+            if (g != null) {
+                intent.putExtra("GRUPO_ID", g.optInt("id", 0));
+                intent.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
+                intent.putExtra("GRUPO_ORDEN", g.has("orden_entrega") && !g.isNull("orden_entrega") ? g.optInt("orden_entrega") : -1);
+            }
+            startActivity(intent);
+        });
 
         Button btn = new Button(this);
         btn.setText("Ver Detalles");
@@ -256,25 +283,12 @@ public class GrupoRutaActivity extends AppCompatActivity {
         });
 
         card.addView(logo);
-        // Fila horizontal con ID y chip del grupo
-        LinearLayout rowTop = new LinearLayout(this);
-        rowTop.setOrientation(LinearLayout.HORIZONTAL);
-        rowTop.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
-        tId.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        chipParams.setMargins(12, 0, 0, 0);
-        chipGrupo.setLayoutParams(chipParams);
-        rowTop.addView(tId);
-        rowTop.addView(chipGrupo);
-        card.addView(rowTop);
-        if (tOrden != null) card.addView(tOrden);
+        // Igual que Home: ID y luego línea de Grupo (si existe)
+        card.addView(tId);
+        if (textGroup != null) card.addView(textGroup);
         card.addView(tCliente);
         card.addView(tEstado);
         card.addView(tFechaRecep);
-        card.addView(btn);
         cardView.addView(card);
         container.addView(cardView);
     }
