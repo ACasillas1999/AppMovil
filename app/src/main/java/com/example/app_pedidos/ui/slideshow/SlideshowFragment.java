@@ -316,7 +316,8 @@ public class SlideshowFragment extends Fragment {
                 ));
                 String nombreGrupo = grupoObj.optString("nombre", "");
                 int orden = (grupoObj.has("orden_entrega") && !grupoObj.isNull("orden_entrega")) ? grupoObj.optInt("orden_entrega") : -1;
-                String label = "Grupo: " + nombreGrupo + (orden >= 0 ? " (orden " + orden + ")" : "");
+                int gid = grupoObj.optInt("id", 0);
+                String label = "Grupo" + (gid > 0 ? " #" + gid : "") + ": " + nombreGrupo + (orden >= 0 ? " (orden " + orden + ")" : "");
                 textGroup.setText(label);
                 textGroup.setTextSize(14);
                 textGroup.setTypeface(null, Typeface.BOLD);

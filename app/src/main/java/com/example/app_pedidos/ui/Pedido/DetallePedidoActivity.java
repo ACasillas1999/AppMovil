@@ -343,10 +343,12 @@ public class DetallePedidoActivity extends AppCompatActivity {
         // Grupo (si viene de extras)
         String gNombre = datos.containsKey("GRUPO_NOMBRE") ? datos.getString("GRUPO_NOMBRE") : "";
         int gOrden = datos.containsKey("GRUPO_ORDEN") ? datos.getInt("GRUPO_ORDEN") : -1;
+        int gId = datos.containsKey("GRUPO_ID") ? datos.getInt("GRUPO_ID") : 0;
         TextView tvGrupo = findViewById(R.id.textGrupo);
         if (tvGrupo != null) {
             if (gNombre != null && !gNombre.isEmpty()) {
-                String label = gNombre + (gOrden >= 0 ? " (orden " + gOrden + ")" : "");
+                String prefix = gId > 0 ? ("#" + gId + " - ") : "";
+                String label = prefix + gNombre + (gOrden >= 0 ? " (orden " + gOrden + ")" : "");
                 tvGrupo.setText(label);
             } else {
                 tvGrupo.setText("Sin grupo");

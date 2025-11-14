@@ -10,9 +10,12 @@ import android.widget.TextView;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -22,12 +25,16 @@ import com.example.app_pedidos.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GrupoRutaActivity extends AppCompatActivity {
 
     private LinearLayout container;
     private TextView headerNombre;
     private TextView headerMeta;
+    private int grupoId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,10 +45,20 @@ public class GrupoRutaActivity extends AppCompatActivity {
         headerNombre = findViewById(R.id.textGrupoNombreHeader);
         headerMeta = findViewById(R.id.textGrupoMetaHeader);
 
-        int grupoId = getIntent().getIntExtra("GRUPO_ID", 0);
+        // Back button in toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar_Pedidos);
+        if (toolbar != null) {
+            View back = toolbar.findViewById(R.id.VOlverBton);
+            if (back != null) {
+                back.setOnClickListener(v -> finish());
+            }
+        }
+
+        grupoId = getIntent().getIntExtra("GRUPO_ID", 0);
         String grupoNombre = getIntent().getStringExtra("GRUPO_NOMBRE");
         if (grupoNombre == null) grupoNombre = "";
-        headerNombre.setText(grupoNombre.isEmpty() ? "Grupo" : grupoNombre);
+        String titulo = (grupoId > 0 ? ("Grupo #" + grupoId + ": ") : "Grupo: ") + (grupoNombre.isEmpty() ? "" : grupoNombre);
+        headerNombre.setText(titulo);
 
         String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php?grupo_id=" + grupoId + "&limit=1000";
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -54,10 +71,20 @@ public class GrupoRutaActivity extends AppCompatActivity {
                         }
                         JSONArray arr = response.optJSONArray("pedidos");
                         if (arr != null) {
-                            for (int i = 0; i < arr.length(); i++) {
-                                JSONObject p = arr.getJSONObject(i);
-                                addPedidoCard(p);
-                            }
+                            // Ordenar por orden_entrega asc y luego por ID asc
+                            ArrayList<JSONObject> lista = new ArrayList<>();
+                            for (int i = 0; i < arr.length(); i++) lista.add(arr.getJSONObject(i));
+                            Collections.sort(lista, new Comparator<JSONObject>() {
+                                @Override public int compare(JSONObject a, JSONObject b) {
+                                    int oa = extraerOrden(a);
+                                    int ob = extraerOrden(b);
+                                    if (oa != ob) return Integer.compare(oa, ob);
+                                    long ida = safeLong(a.optString("ID", "0"));
+                                    long idb = safeLong(b.optString("ID", "0"));
+                                    return Long.compare(ida, idb);
+                                }
+                            });
+                            for (JSONObject p : lista) addPedidoCard(p);
                         }
                     } catch (Exception ignored) { }
                 },
@@ -65,16 +92,45 @@ public class GrupoRutaActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(req);
     }
 
+    private long safeLong(String s) { try { return Long.parseLong(s); } catch (Exception e) { return 0L; } }
+    private int extraerOrden(JSONObject o) {
+        try {
+            if (o.has("orden_entrega") && !o.isNull("orden_entrega")) return o.optInt("orden_entrega");
+            JSONObject g = o.optJSONObject("grupo");
+            if (g != null && g.has("orden_entrega") && !g.isNull("orden_entrega")) return g.optInt("orden_entrega");
+        } catch (Exception ignored) { }
+        return Integer.MAX_VALUE; // sin orden al final
+    }
+
     private void addPedidoCard(final JSONObject pedido) {
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0,0,0,16);
-        card.setLayoutParams(params);
-        card.setPadding(16,16,16,16);
-        card.setBackgroundColor(Color.parseColor("#F5F5F5"));
+        // Contenedor estilo CardView como en las otras vistas
+        CardView cardView = new CardView(this);
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0,0,0,16);
+        cardView.setLayoutParams(cardParams);
+        cardView.setRadius(16);
+        cardView.setCardElevation(8);
 
         String estado = pedido.optString("ESTADO", "");
+        // Mismos colores que Home/Historial
+        int bgColor;
+        switch (estado) {
+            case "ACTIVO": bgColor = Color.parseColor("#CCE5FF"); break;
+            case "EN RUTA": bgColor = Color.parseColor("#FFD699"); break;
+            case "REPROGRAMADO": bgColor = Color.parseColor("#E6CCFF"); break;
+            case "EN TIENDA": bgColor = Color.parseColor("#FFFFCC"); break;
+            case "ENTREGADO": bgColor = Color.parseColor("#C8E6C9"); break;
+            case "CANCELADO": bgColor = Color.parseColor("#FFCDD2"); break;
+            default: bgColor = Color.WHITE; break;
+        }
+        cardView.setCardBackgroundColor(bgColor);
+
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(16,16,16,16);
         ImageView logo = new ImageView(this);
         LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(200,200);
         logo.setLayoutParams(imgParams);
@@ -109,6 +165,28 @@ public class GrupoRutaActivity extends AppCompatActivity {
         tId.setText("ID: " + pedido.optString("ID", ""));
         tId.setTextSize(16);
         tId.setTypeface(tId.getTypeface(), Typeface.BOLD);
+
+        // Mostrar Orden dentro del grupo si existe
+        int orden = extraerOrden(pedido);
+        TextView tOrden = null;
+        if (orden != Integer.MAX_VALUE) {
+            tOrden = new TextView(this);
+            tOrden.setText("Orden: " + orden);
+            tOrden.setTextSize(14);
+            tOrden.setTextColor(Color.parseColor("#1565C0"));
+            tOrden.setTypeface(tOrden.getTypeface(), Typeface.BOLD);
+        }
+
+        // Chip con ID del grupo
+        TextView chipGrupo = new TextView(this);
+        chipGrupo.setText("Grupo #" + Math.max(grupoId, 0));
+        chipGrupo.setTextSize(12);
+        chipGrupo.setTextColor(Color.WHITE);
+        chipGrupo.setPadding(20, 8, 20, 8);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(Color.parseColor("#1565C0"));
+        bg.setCornerRadius(24);
+        chipGrupo.setBackground(bg);
 
         TextView tCliente = new TextView(this);
         tCliente.setText("Cliente: " + pedido.optString("NOMBRE_CLIENTE", ""));
@@ -153,11 +231,25 @@ public class GrupoRutaActivity extends AppCompatActivity {
         });
 
         card.addView(logo);
-        card.addView(tId);
+        // Fila horizontal con ID y chip del grupo
+        LinearLayout rowTop = new LinearLayout(this);
+        rowTop.setOrientation(LinearLayout.HORIZONTAL);
+        rowTop.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        tId.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        chipParams.setMargins(12, 0, 0, 0);
+        chipGrupo.setLayoutParams(chipParams);
+        rowTop.addView(tId);
+        rowTop.addView(chipGrupo);
+        card.addView(rowTop);
+        if (tOrden != null) card.addView(tOrden);
         card.addView(tCliente);
         card.addView(tEstado);
         card.addView(btn);
-        container.addView(card);
+        cardView.addView(card);
+        container.addView(cardView);
     }
 }
-
