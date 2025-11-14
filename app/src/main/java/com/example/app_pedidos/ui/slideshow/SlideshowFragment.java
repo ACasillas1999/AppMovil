@@ -370,58 +370,42 @@ public class SlideshowFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
         btnVerDetalle.setText("Ver Detalles");
-        btnVerDetalle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isAdded()) {
+                btnVerDetalle.setOnClickListener(v -> {
+            if (!isAdded()) return;
+            try {
+                JSONObject g = pedido.optJSONObject("grupo");
+                if (g != null && g.optInt("id", 0) > 0) {
+                    Intent gi = new Intent(getContext(), com.example.app_pedidos.ui.Pedido.GrupoRutaActivity.class);
+                    gi.putExtra("GRUPO_ID", g.optInt("id", 0));
+                    gi.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
+                    startActivity(gi);
                     return;
                 }
-                try {
-                    // Intent para abrir la actividad de detalles del pedido
-                    Intent intent = new Intent(getContext(), DetallePedidoActivity.class);
-                    intent.putExtra("ID", pedido.getString("ID"));
-                    intent.putExtra("SUCURSAL", pedido.getString("SUCURSAL"));
-                    intent.putExtra("NOMBRE_CLIENTE", pedido.getString("NOMBRE_CLIENTE"));
-                    intent.putExtra("ESTADO", pedido.getString("ESTADO"));
-                    intent.putExtra("FECHA_RECEPCION_FACTURA", pedido.getString("FECHA_RECEPCION_FACTURA"));
-                    intent.putExtra("FECHA_ENTREGA_CLIENTE", pedido.getString("FECHA_ENTREGA_CLIENTE"));
-                    intent.putExtra("CHOFER_ASIGNADO", pedido.getString("CHOFER_ASIGNADO"));
-                    intent.putExtra("VENDEDOR", pedido.getString("VENDEDOR"));
-                    intent.putExtra("FACTURA", pedido.getString("FACTURA"));
-                    intent.putExtra("DIRECCION", pedido.getString("DIRECCION"));
-                    intent.putExtra("FECHA_MIN_ENTREGA", pedido.getString("FECHA_MIN_ENTREGA"));
-                    intent.putExtra("FECHA_MAX_ENTREGA", pedido.getString("FECHA_MAX_ENTREGA"));
-                    intent.putExtra("MIN_VENTANA_HORARIA_1", pedido.getString("MIN_VENTANA_HORARIA_1"));
-                    intent.putExtra("MAX_VENTANA_HORARIA_1", pedido.getString("MAX_VENTANA_HORARIA_1"));
-                    intent.putExtra("TELEFONO", pedido.getString("TELEFONO"));
-                    intent.putExtra("CONTACTO", pedido.getString("CONTACTO"));
-                    intent.putExtra("COMENTARIOS", pedido.getString("COMENTARIOS"));
-                    intent.putExtra("Ruta", pedido.getString("Ruta"));
-                    intent.putExtra("Coord_Origen", pedido.getString("Coord_Origen"));
-                    intent.putExtra("Coord_Destino", pedido.getString("Coord_Destino"));
-                    // Extras de grupo
-                    try {
-                        JSONObject g = pedido.optJSONObject("grupo");
-                        if (g != null) {
-                            intent.putExtra("GRUPO_ID", g.optInt("id", 0));
-                            intent.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
-                            intent.putExtra("GRUPO_ORDEN", g.has("orden_entrega") && !g.isNull("orden_entrega") ? g.optInt("orden_entrega") : -1);
-                        } else {
-                            intent.putExtra("GRUPO_ID", 0);
-                            intent.putExtra("GRUPO_NOMBRE", "");
-                            intent.putExtra("GRUPO_ORDEN", -1);
-                        }
-                    } catch (Exception ignore) { }
-                    startActivity(intent);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    // Manejar la excepción JSONException si ocurre
-                    Log.e("SlideshowFragment", "Error al procesar JSON: " + e.getMessage());
-                    // Mostrar un mensaje de error al usuario si lo deseas
-                    if (isAdded()) {
-                        mostrarMensaje("Error al procesar JSON");
-                    }
-                }
+                Intent intent = new Intent(getContext(), DetallePedidoActivity.class);
+                intent.putExtra("ID", pedido.getString("ID"));
+                intent.putExtra("SUCURSAL", pedido.getString("SUCURSAL"));
+                intent.putExtra("NOMBRE_CLIENTE", pedido.getString("NOMBRE_CLIENTE"));
+                intent.putExtra("ESTADO", pedido.getString("ESTADO"));
+                intent.putExtra("FECHA_RECEPCION_FACTURA", pedido.getString("FECHA_RECEPCION_FACTURA"));
+                intent.putExtra("FECHA_ENTREGA_CLIENTE", pedido.optString("FECHA_ENTREGA_CLIENTE", ""));
+                intent.putExtra("CHOFER_ASIGNADO", pedido.optString("CHOFER_ASIGNADO", ""));
+                intent.putExtra("VENDEDOR", pedido.optString("VENDEDOR", ""));
+                intent.putExtra("FACTURA", pedido.optString("FACTURA", ""));
+                intent.putExtra("DIRECCION", pedido.optString("DIRECCION", ""));
+                intent.putExtra("FECHA_MIN_ENTREGA", pedido.optString("FECHA_MIN_ENTREGA", ""));
+                intent.putExtra("FECHA_MAX_ENTREGA", pedido.optString("FECHA_MAX_ENTREGA", ""));
+                intent.putExtra("MIN_VENTANA_HORARIA_1", pedido.optString("MIN_VENTANA_HORARIA_1", ""));
+                intent.putExtra("MAX_VENTANA_HORARIA_1", pedido.optString("MAX_VENTANA_HORARIA_1", ""));
+                intent.putExtra("TELEFONO", pedido.optString("TELEFONO", ""));
+                intent.putExtra("CONTACTO", pedido.optString("CONTACTO", ""));
+                intent.putExtra("COMENTARIOS", pedido.optString("COMENTARIOS", ""));
+                intent.putExtra("Ruta", pedido.optString("Ruta", ""));
+                intent.putExtra("Coord_Origen", pedido.optString("Coord_Origen", ""));
+                intent.putExtra("Coord_Destino", pedido.optString("Coord_Destino", ""));
+                startActivity(intent);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                if (isAdded()) mostrarMensaje("Error al procesar JSON");
             }
         });
 
@@ -489,3 +473,4 @@ public class SlideshowFragment extends Fragment {
         }
     }
 }
+

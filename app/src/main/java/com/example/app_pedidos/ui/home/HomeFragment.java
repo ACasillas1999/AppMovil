@@ -217,7 +217,14 @@ public class HomeFragment extends Fragment {
         btnVerDetalle.setOnClickListener(v -> {
             try {
                 JSONObject pedidoSeleccionado = pedidosArray.getJSONObject(linearLayoutContainer.indexOfChild((View) v.getParent().getParent()));
-                if (pedidoSeleccionado.has("ID") && pedidoSeleccionado.has("SUCURSAL") && pedidoSeleccionado.has("NOMBRE_CLIENTE") && pedidoSeleccionado.has("ESTADO") && pedidoSeleccionado.has("FECHA_RECEPCION_FACTURA")) {
+                JSONObject g = pedidoSeleccionado.optJSONObject("grupo");
+                if (g != null && g.optInt("id", 0) > 0) {
+                    // Ir a pantalla de grupo
+                    Intent gi = new Intent(requireContext(), com.example.app_pedidos.ui.Pedido.GrupoRutaActivity.class);
+                    gi.putExtra("GRUPO_ID", g.optInt("id", 0));
+                    gi.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
+                    startActivity(gi);
+                } else if (pedidoSeleccionado.has("ID") && pedidoSeleccionado.has("SUCURSAL") && pedidoSeleccionado.has("NOMBRE_CLIENTE") && pedidoSeleccionado.has("ESTADO") && pedidoSeleccionado.has("FECHA_RECEPCION_FACTURA")) {
                     Intent intent = new Intent(requireContext(), DetallePedidoActivity.class);
                     intent.putExtra("ID", pedidoSeleccionado.getString("ID"));
                     intent.putExtra("SUCURSAL", pedidoSeleccionado.getString("SUCURSAL"));
@@ -239,19 +246,6 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("Ruta", pedidoSeleccionado.optString("Ruta", ""));
                     intent.putExtra("Coord_Origen", pedidoSeleccionado.optString("Coord_Origen", ""));
                     intent.putExtra("Coord_Destino", pedidoSeleccionado.optString("Coord_Destino", ""));
-                    // Extras de grupo si existen
-                    try {
-                        JSONObject g = pedidoSeleccionado.optJSONObject("grupo");
-                        if (g != null) {
-                            intent.putExtra("GRUPO_ID", g.optInt("id", 0));
-                            intent.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
-                            intent.putExtra("GRUPO_ORDEN", g.has("orden_entrega") && !g.isNull("orden_entrega") ? g.optInt("orden_entrega") : -1);
-                        } else {
-                            intent.putExtra("GRUPO_ID", 0);
-                            intent.putExtra("GRUPO_NOMBRE", "");
-                            intent.putExtra("GRUPO_ORDEN", -1);
-                        }
-                    } catch (Exception ignore) { }
                     startActivity(intent);
                 }
             } catch (JSONException e) { e.printStackTrace(); }

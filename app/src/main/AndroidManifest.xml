@@ -65,6 +65,12 @@
             android:label="DetalleActualizacionesActivity"
             android:exported="true" />
 
+        <activity
+            android:name=".ui.Pedido.GrupoRutaActivity"
+            android:label="GrupoRuta"
+            android:exported="true"
+            android:theme="@style/Theme.App_Pedidos" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
