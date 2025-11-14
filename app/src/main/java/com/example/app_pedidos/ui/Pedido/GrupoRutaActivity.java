@@ -101,6 +101,17 @@ public class GrupoRutaActivity extends AppCompatActivity {
                         .show(getSupportFragmentManager(), "grupo_mapa");
             });
         }
+
+        // Si viene desde una notificación y se solicita abrir el mapa directamente
+        boolean openMap = getIntent().getBooleanExtra("OPEN_MAP", false);
+        if (openMap && grupoId > 0) {
+            btnMap.post(() -> {
+                try {
+                    GrupoMapaDialogFragment.newWithGroupId(grupoId)
+                            .show(getSupportFragmentManager(), "grupo_mapa_from_notif");
+                } catch (Exception ignored) {}
+            });
+        }
     }
 
     private long safeLong(String s) { try { return Long.parseLong(s); } catch (Exception e) { return 0L; } }

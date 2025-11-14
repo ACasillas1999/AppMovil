@@ -195,22 +195,22 @@ class HtmlBuilder {
                 " if(coords.length>1){\n"+
                 "   const limited = coords.slice(0,25);\n"+
                 "   const qs = limited.map(c=>c.join(',')).join(';');\n"+
-                "   const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${qs}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;\n"+
+                "   const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${qs}?geometries=geojson&overview=full&steps=true&access_token=${mapboxgl.accessToken}`;\n"+
                 "   try { const r = await fetch(url); const d = await r.json();\n"+
                 "     if(d.routes && d.routes.length>0){ const route=d.routes[0].geometry;\n"+
                 "       map.addSource('route_bg',{type:'geojson', data:{type:'Feature', geometry:route}});\n"+
-                "       map.addLayer({id:'route_bg', type:'line', source:'route_bg', paint:{'line-color':'#B0BEC5','line-width':3,'line-opacity':0.6}}); } } catch(e){}\n"+
+                "       map.addLayer({id:'route_bg', type:'line', source:'route_bg', paint:{'line-color':'#B0BEC5','line-width':3,'line-opacity':0.6}});\n"+
+                "       const legs = d.routes[0].legs || [];\n"+
+                "       for(let i=0;i<legs.length;i++){ const steps = legs[i].steps || []; let coordsLeg=[];\n"+
+                "         for(let j=0;j<steps.length;j++){ const g = steps[j].geometry; if(g&&g.coordinates){ if(coordsLeg.length>0){ coordsLeg = coordsLeg.concat(g.coordinates.slice(1)); } else { coordsLeg = coordsLeg.concat(g.coordinates); } } }\n"+
+                "         if(coordsLeg.length>1){ const id='leg_'+i; if(map.getLayer(id)) map.removeLayer(id); if(map.getSource(id)) map.removeSource(id);\n"+
+                "           map.addSource(id,{type:'geojson', data:{ type:'Feature', geometry:{ type:'LineString', coordinates: coordsLeg } }});\n"+
+                "           const col = colorForStatus((points[i+1]||{}).estado);\n"+
+                "           map.addLayer({ id:id, type:'line', source:id, paint:{ 'line-color': col, 'line-width':5, 'line-opacity':0.95 }}); }\n"+
+                "       }\n"+
+                "     } } catch(e){}\n"+
                 " }\n"+
-                " // Segmentos por estado (recta entre puntos consecutivos, coloreada por estado del destino)\n"+
-                " for(let i=0;i<points.length-1;i++){ const a=points[i], b=points[i+1];\n"+
-                "   const seg = { type:'Feature', geometry:{ type:'LineString', coordinates:[[a.lng,a.lat],[b.lng,b.lat]] } };\n"+
-                "   const srcId='leg_'+i; const layerId='leg_'+i;\n"+
-                "   if(!isNaN(a.lng)&&!isNaN(a.lat)&&!isNaN(b.lng)&&!isNaN(b.lat)){\n"+
-                "     if(map.getSource(srcId)) map.removeSource(srcId); if(map.getLayer(layerId)) map.removeLayer(layerId);\n"+
-                "     map.addSource(srcId,{type:'geojson', data:seg});\n"+
-                "     map.addLayer({id:layerId, type:'line', source:srcId, paint:{'line-color':colorForStatus(b.estado),'line-width':5,'line-opacity':0.9}});\n"+
-                "   }\n"+
-                " }\n"+
+                " \n"+
                 " window.App={ center: ()=> map.fitBounds(bounds,{padding:40}) };\n"+
                 "});\n"+
                 "</script></body></html>";

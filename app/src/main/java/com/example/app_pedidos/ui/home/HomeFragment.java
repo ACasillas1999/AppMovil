@@ -78,7 +78,10 @@ public class HomeFragment extends Fragment {
                         if (!vehiculoAsignado) { mostrarBloqueoSinVehiculo(); return; }
                         if (noVehiculoDialog != null && noVehiculoDialog.isShowing()) noVehiculoDialog.dismiss();
                         JSONArray arr = response.optJSONArray("pedidos");
-                        if (arr == null || arr.length() == 0) mostrarListaVacia(); else mostrarPedidos(arr);
+                        if (arr == null || arr.length() == 0) mostrarListaVacia(); else {
+                            mostrarPedidos(arr);
+                            intentarNotificarEnRuta(arr);
+                        }
                     } catch (Exception e) {
                         Log.e("HomeFragment", "Error al procesar la respuesta", e);
                         mostrarMensaje("Error al procesar datos");
@@ -110,6 +113,60 @@ public class HomeFragment extends Fragment {
             empty.setPadding(24,24,24,24);
             linearLayoutContainer.addView(empty);
         });
+    }
+
+    private void solicitarPermisoNotificacionesSiNecesario() {
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            if (requireContext().checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 5001);
+            }
+        }
+    }
+
+    private void intentarNotificarEnRuta(JSONArray arr) {
+        try { solicitarPermisoNotificacionesSiNecesario(); } catch (Exception ignore) {}
+        try {
+            SharedPreferences sp = requireActivity().getSharedPreferences("notif_prefs", Context.MODE_PRIVATE);
+            String activeCsv = sp.getString("notif_active_ids", "");
+            if (activeCsv.isEmpty()) activeCsv = sp.getString("en_ruta_ids", ""); // compatibilidad
+            java.util.HashSet<String> active = new java.util.HashSet<>();
+            if (!activeCsv.isEmpty()) for (String s : activeCsv.split(",")) if (!s.isEmpty()) active.add(s);
+
+            java.util.HashSet<String> toKeep = new java.util.HashSet<>(active);
+
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject p = arr.getJSONObject(i);
+                String id = p.optString("ID", "");
+                if (id.isEmpty()) continue;
+                String estado = p.optString("ESTADO", "");
+
+                boolean isCompleted = "ENTREGADO".equalsIgnoreCase(estado) || "COMPLETADO".equalsIgnoreCase(estado) || "FINALIZADO".equalsIgnoreCase(estado);
+                if (isCompleted) {
+                    if (active.contains(id)) {
+                        try { com.example.app_pedidos.util.NotificationHelper.cancelForPedido(requireContext(), Integer.parseInt(id)); } catch (Exception ignore) {}
+                        toKeep.remove(id);
+                    }
+                    continue;
+                }
+
+                if ("EN RUTA".equalsIgnoreCase(estado)) {
+                    if (!active.contains(id)) {
+                        com.example.app_pedidos.util.NotificationHelper.notifyEnRuta(requireContext(), p);
+                        toKeep.add(id);
+                    } else {
+                        com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                    }
+                } else {
+                    if (active.contains(id)) {
+                        com.example.app_pedidos.util.NotificationHelper.notifyEstado(requireContext(), p);
+                        toKeep.add(id);
+                    }
+                }
+            }
+
+            String nextCsv = String.join(",", toKeep);
+            sp.edit().putString("notif_active_ids", nextCsv).apply();
+        } catch (Exception e) { /* silencioso */ }
     }
 
     private void mostrarPedidos(JSONArray response) {
