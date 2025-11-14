@@ -340,6 +340,18 @@ public class DetallePedidoActivity extends AppCompatActivity {
     private void mostrarDatosPedido(Bundle datos) {
         ((TextView) findViewById(R.id.textId)).setText(getStringFromBundle(datos, "ID"));
         ((TextView) findViewById(R.id.textSucursal)).setText(getStringFromBundle(datos, "SUCURSAL"));
+        // Grupo (si viene de extras)
+        String gNombre = datos.containsKey("GRUPO_NOMBRE") ? datos.getString("GRUPO_NOMBRE") : "";
+        int gOrden = datos.containsKey("GRUPO_ORDEN") ? datos.getInt("GRUPO_ORDEN") : -1;
+        TextView tvGrupo = findViewById(R.id.textGrupo);
+        if (tvGrupo != null) {
+            if (gNombre != null && !gNombre.isEmpty()) {
+                String label = gNombre + (gOrden >= 0 ? " (orden " + gOrden + ")" : "");
+                tvGrupo.setText(label);
+            } else {
+                tvGrupo.setText("Sin grupo");
+            }
+        }
         ((TextView) findViewById(R.id.textCliente)).setText(getStringFromBundle(datos, "NOMBRE_CLIENTE"));
         ((TextView) findViewById(R.id.textEstado)).setText(getStringFromBundle(datos, "ESTADO"));
         ((TextView) findViewById(R.id.textFechaRecepcion)).setText(getStringFromBundle(datos, "FECHA_RECEPCION_FACTURA"));

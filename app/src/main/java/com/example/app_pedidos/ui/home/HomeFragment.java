@@ -179,6 +179,23 @@ public class HomeFragment extends Fragment {
         }
         imageOrderTitle.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
 
+        // Grupo (si existe)
+        TextView textGroup = null;
+        try {
+            JSONObject grupoObj = pedido.optJSONObject("grupo");
+            if (grupoObj != null) {
+                textGroup = new TextView(requireContext());
+                textGroup.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                String nombreGrupo = grupoObj.optString("nombre", "");
+                int orden = grupoObj.has("orden_entrega") && !grupoObj.isNull("orden_entrega") ? grupoObj.optInt("orden_entrega") : -1;
+                String label = "Grupo: " + nombreGrupo + (orden >= 0 ? " (orden " + orden + ")" : "");
+                textGroup.setText(label);
+                textGroup.setTextSize(14);
+                textGroup.setTypeface(textGroup.getTypeface(), Typeface.BOLD);
+                textGroup.setTextColor(Color.parseColor("#1565C0"));
+            }
+        } catch (Exception ignore) { }
+
         TextView textOrderDetails = new TextView(requireContext());
         textOrderDetails.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textOrderDetails.setText("Cliente: " + pedido.optString("NOMBRE_CLIENTE", ""));
@@ -222,6 +239,19 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("Ruta", pedidoSeleccionado.optString("Ruta", ""));
                     intent.putExtra("Coord_Origen", pedidoSeleccionado.optString("Coord_Origen", ""));
                     intent.putExtra("Coord_Destino", pedidoSeleccionado.optString("Coord_Destino", ""));
+                    // Extras de grupo si existen
+                    try {
+                        JSONObject g = pedidoSeleccionado.optJSONObject("grupo");
+                        if (g != null) {
+                            intent.putExtra("GRUPO_ID", g.optInt("id", 0));
+                            intent.putExtra("GRUPO_NOMBRE", g.optString("nombre", ""));
+                            intent.putExtra("GRUPO_ORDEN", g.has("orden_entrega") && !g.isNull("orden_entrega") ? g.optInt("orden_entrega") : -1);
+                        } else {
+                            intent.putExtra("GRUPO_ID", 0);
+                            intent.putExtra("GRUPO_NOMBRE", "");
+                            intent.putExtra("GRUPO_ORDEN", -1);
+                        }
+                    } catch (Exception ignore) { }
                     startActivity(intent);
                 }
             } catch (JSONException e) { e.printStackTrace(); }
@@ -229,6 +259,7 @@ public class HomeFragment extends Fragment {
 
         linearLayout.addView(imageOrderTitle);
         linearLayout.addView(textOrderId);
+        if (textGroup != null) { linearLayout.addView(textGroup); }
         linearLayout.addView(textOrderDetails);
         linearLayout.addView(textOrderState);
         linearLayout.addView(textOrderDate);
