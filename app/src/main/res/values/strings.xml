@@ -40,6 +40,7 @@
     <string name="factura">Factura:</string>
 
     <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1IjoiYWNhc2lsbGFzNzY2IiwiYSI6ImNsdnk4bXFqejJtajUybG1nNGVqMTF6eXEifQ.6jPJtF0lGWi1t8T70rxXlQ</string>
+    <string name="mapbox_public_token" translatable="false" tools:ignore="UnusedResources">pk.eyJ1IjoiYWNhc2lsbGFzNzY2IiwiYSI6ImNsdW12cTZyMjB4NnMya213MDdseXp6ZGgifQ.t7-l1lQfd8mgHILM5YrdNw</string>
     <string name="tomar_foto">Tomar Foto</string>
     <string name="descargar_documento">Descargar documento</string>
     <string name="ver_detalles">Ver detalles</string>

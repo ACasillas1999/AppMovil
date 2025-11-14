@@ -28,6 +28,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import android.net.Uri;
+import android.widget.Button;
 
 public class GrupoRutaActivity extends AppCompatActivity {
 
@@ -90,6 +92,15 @@ public class GrupoRutaActivity extends AppCompatActivity {
                 },
                 error -> { /* ignore simple errors visually */ });
         Volley.newRequestQueue(this).add(req);
+
+        // Botón para abrir mapa web del grupo
+        Button btnMap = findViewById(R.id.btnVerMapaGrupo);
+        if (btnMap != null) {
+            btnMap.setOnClickListener(v -> {
+                GrupoMapaDialogFragment.newWithGroupId(grupoId)
+                        .show(getSupportFragmentManager(), "grupo_mapa");
+            });
+        }
     }
 
     private long safeLong(String s) { try { return Long.parseLong(s); } catch (Exception e) { return 0L; } }

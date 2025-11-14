@@ -60,6 +60,18 @@
                 android:textColor="@android:color/darker_gray"
                 android:layout_marginBottom="8dp" />
 
+            <Button
+                android:id="@+id/btnVerMapaGrupo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ver mapa de la ruta"
+                android:textAllCaps="false"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:backgroundTint="@color/naranja"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="8dp" />
+
             <LinearLayout
                 android:id="@+id/linearLayoutContainerGroup"
                 android:orientation="vertical"
