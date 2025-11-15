@@ -86,6 +86,10 @@ public class DetallePedidoActivity extends AppCompatActivity {
     private boolean isDownloadReceiverRegistered = false;
     private String pendingEstado = null; // Estado pendiente si falta permiso de ubicacion
 
+    // Datos de grupo (para abrir pantalla de grupo desde detalle)
+    private int grupoId = 0;
+    private String grupoNombre = "";
+    private int grupoOrden = -1;
 
 
     // Eliminado LocationManager/LocationListener: usaremos solo FusedLocationProviderClient
@@ -342,19 +346,11 @@ public class DetallePedidoActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.textId)).setText(getStringFromBundle(datos, "ID"));
         ((TextView) findViewById(R.id.textSucursal)).setText(getStringFromBundle(datos, "SUCURSAL"));
         // Grupo (si viene de extras)
-        String gNombre = datos.containsKey("GRUPO_NOMBRE") ? datos.getString("GRUPO_NOMBRE") : "";
-        int gOrden = datos.containsKey("GRUPO_ORDEN") ? datos.getInt("GRUPO_ORDEN") : -1;
-        int gId = datos.containsKey("GRUPO_ID") ? datos.getInt("GRUPO_ID") : 0;
+        this.grupoNombre = datos.containsKey("GRUPO_NOMBRE") ? datos.getString("GRUPO_NOMBRE") : "";
+        this.grupoOrden = datos.containsKey("GRUPO_ORDEN") ? datos.getInt("GRUPO_ORDEN") : -1;
+        this.grupoId = datos.containsKey("GRUPO_ID") ? datos.getInt("GRUPO_ID") : 0;
         TextView tvGrupo = findViewById(R.id.textGrupo);
-        if (tvGrupo != null) {
-            if (gNombre != null && !gNombre.isEmpty()) {
-                String prefix = gId > 0 ? ("#" + gId + " - ") : "";
-                String label = prefix + gNombre + (gOrden >= 0 ? " (orden " + gOrden + ")" : "");
-                tvGrupo.setText(label);
-            } else {
-                tvGrupo.setText("Sin grupo");
-            }
-        }
+        if (tvGrupo != null) applyGrupoToView(tvGrupo);
         ((TextView) findViewById(R.id.textCliente)).setText(getStringFromBundle(datos, "NOMBRE_CLIENTE"));
         ((TextView) findViewById(R.id.textEstado)).setText(getStringFromBundle(datos, "ESTADO"));
         ((TextView) findViewById(R.id.textFechaRecepcion)).setText(getStringFromBundle(datos, "FECHA_RECEPCION_FACTURA"));
@@ -380,6 +376,13 @@ public class DetallePedidoActivity extends AppCompatActivity {
         coordenadasDestino = getStringFromBundle(datos, "Coord_Destino");
 
         pedidoId = getStringFromBundle(datos, "ID"); // Guardar el ID del pedido
+
+        // Fallback: si no llegaron datos de grupo en el Intent, intenta resolverlo por factura
+        boolean faltaGrupo = (this.grupoId <= 0) && (this.grupoNombre == null || this.grupoNombre.isEmpty());
+        String factura = getStringFromBundle(datos, "FACTURA");
+        if (faltaGrupo && !TextUtils.isEmpty(factura) && !"No disponible".equalsIgnoreCase(factura)) {
+            fetchGrupoPorFactura(factura);
+        }
     }
 
     private String getStringFromBundle(Bundle extras, String key) {
@@ -391,6 +394,66 @@ public class DetallePedidoActivity extends AppCompatActivity {
         String maxVentanaHoraria = getStringFromBundle(extras, maxKey);
         return TextUtils.isEmpty(minVentanaHoraria) || TextUtils.isEmpty(maxVentanaHoraria) ?
                 "No definido" : minVentanaHoraria + " - " + maxVentanaHoraria;
+    }
+
+    private void applyGrupoToView(TextView tv) {
+        if (tv == null) return;
+        boolean hasNombre = (grupoNombre != null && !grupoNombre.isEmpty());
+        boolean hasId = (grupoId > 0);
+        if (hasNombre || hasId) {
+            StringBuilder label = new StringBuilder();
+            if (hasId) label.append("#").append(grupoId).append(" - ");
+            if (hasNombre) label.append(grupoNombre);
+            if (grupoOrden >= 0) label.append(" (orden ").append(grupoOrden).append(")");
+            String out = label.toString().replaceAll("\\s*-\\s*$", "");
+            tv.setText(out.isEmpty() ? ("Grupo #" + grupoId) : out);
+            // Hacer clickeable para abrir el grupo
+            tv.setTextColor(ContextCompat.getColor(this, R.color.azul_oscuro));
+            tv.setOnClickListener(v -> {
+                if (grupoId > 0) {
+                    Intent gi = new Intent(DetallePedidoActivity.this, com.example.app_pedidos.ui.Pedido.GrupoRutaActivity.class);
+                    gi.putExtra("GRUPO_ID", grupoId);
+                    gi.putExtra("GRUPO_NOMBRE", grupoNombre != null ? grupoNombre : "");
+                    startActivity(gi);
+                }
+            });
+        } else {
+            tv.setText("Sin grupo");
+            tv.setOnClickListener(null);
+        }
+    }
+
+    private void fetchGrupoPorFactura(String factura) {
+        try {
+            String base = ApiConfig.BASE_URL + "/Pedidos_GA/App/Consultar.php?factura=" + java.net.URLEncoder.encode(factura, "UTF-8");
+            okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
+            okhttp3.Request req = new okhttp3.Request.Builder().url(base).get().build();
+            client.newCall(req).enqueue(new okhttp3.Callback() {
+                @Override public void onFailure(okhttp3.Call call, java.io.IOException e) { /* silencio */ }
+                @Override public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                    if (!response.isSuccessful()) return;
+                    String body = response.body() != null ? response.body().string() : null;
+                    if (body == null || body.isEmpty()) return;
+                    try {
+                        org.json.JSONObject json = new org.json.JSONObject(body);
+                        org.json.JSONObject g = json.optJSONObject("grupo");
+                        if (g != null) {
+                            final int id = g.optInt("id", 0);
+                            final String nombre = g.optString("nombre", "");
+                            final int orden = g.has("orden_entrega") && !g.isNull("orden_entrega") ? g.optInt("orden_entrega") : -1;
+                            runOnUiThread(() -> {
+                                TextView tv = findViewById(R.id.textGrupo);
+                                if (tv != null) {
+                                    // Actualiza estado interno y aplica a la vista
+                                    grupoId = id; grupoNombre = nombre; grupoOrden = orden;
+                                    applyGrupoToView(tv);
+                                }
+                            });
+                        }
+                    } catch (Exception ignore) { }
+                }
+            });
+        } catch (Exception ignored) { }
     }
 
     private void mostrarError() {
