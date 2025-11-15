@@ -153,7 +153,21 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
                         if (!obj.isNull("Km_Total")) {
                             try { lastKmFinal = obj.getInt("Km_Total"); } catch (Exception ignore) { lastKmFinal = null; }
                         } else { lastKmFinal = null; }
-                        if (assigned && needs) {
+                        // Evaluar si ya hay registro hoy según la fecha devuelta por el servidor
+                        boolean hasToday = false;
+                        try {
+                            String lastFecha = obj.optString("last_fecha", null);
+                            if (lastFecha != null && !lastFecha.isEmpty()) {
+                                String datePart = lastFecha.split(" ")[0];
+                                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+                                String today = sdf.format(new java.util.Date());
+                                hasToday = today.equals(datePart);
+                            }
+                        } catch (Exception ignore) { hasToday = false; }
+
+                        boolean needKmLocal = isAfterEightExceptSunday() && !hasToday;
+
+                        if (assigned && (needs || needKmLocal)) {
                             mostrarDialogoCapturaKilometraje(username, lastKmFinal);
                         } else if (assigned) {
                             verificarInspeccionHoyYQuizasLanzar(lastKmFinal);
