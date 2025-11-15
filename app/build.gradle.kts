@@ -60,6 +60,9 @@ dependencies {
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
+    // Pull-to-refresh support
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     // SweetAlert removed to avoid external dependency during compile
 
 

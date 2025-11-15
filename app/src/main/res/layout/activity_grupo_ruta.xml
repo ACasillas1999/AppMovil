@@ -31,53 +31,77 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_Pedidos"
-        android:padding="12dp">
+        android:layout_below="@id/toolbar_Pedidos">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textGrupoNombreHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grupo"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:id="@+id/textGrupoMetaHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:layout_marginBottom="8dp" />
-
-            <Button
-                android:id="@+id/btnVerMapaGrupo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ver mapa de la ruta"
-                android:textAllCaps="false"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:backgroundTint="@color/naranja"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="8dp" />
+            android:layout_height="match_parent"
+            android:padding="12dp">
 
             <LinearLayout
-                android:id="@+id/linearLayoutContainerGroup"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </ScrollView>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textGrupoNombreHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Grupo"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/textGrupoMetaHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnVerMapaGrupo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ver mapa de la ruta"
+                    android:textAllCaps="false"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:backgroundTint="@color/naranja"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutContainerGroup"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <ProgressBar
+        android:id="@+id/progressGroup"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/textEmptyGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay pedidos en este grupo"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16sp"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

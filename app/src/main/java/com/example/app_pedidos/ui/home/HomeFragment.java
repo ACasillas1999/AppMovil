@@ -2,7 +2,9 @@ package com.example.app_pedidos.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.BroadcastReceiver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -50,13 +52,50 @@ public class HomeFragment extends Fragment {
     private LinearLayout linearLayoutContainer;
     private JSONArray pedidosArray;
     private AlertDialog noVehiculoDialog;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeHome;
+
+    private final BroadcastReceiver pedidoEstadoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Refrescar inmediatamente la lista de pedidos cuando cambie un estado
+            obtenerPedidosV2();
+        }
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         linearLayoutContainer = root.findViewById(R.id.linearLayoutContainer);
+        swipeHome = root.findViewById(R.id.swipeHome);
+        if (swipeHome != null) {
+            swipeHome.setOnRefreshListener(this::obtenerPedidosV2);
+            swipeHome.setColorSchemeResources(
+                    android.R.color.holo_blue_bright,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light
+            );
+        }
         iniciarActualizacionPeriodica();
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Registrar receiver para escuchar cambios de estado de pedidos
+        IntentFilter filter = new IntentFilter(com.example.app_pedidos.util.Events.ACTION_PEDIDO_ESTADO_ACTUALIZADO);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        try { requireContext().unregisterReceiver(pedidoEstadoReceiver); } catch (Exception ignore) {}
     }
 
     private void iniciarActualizacionPeriodica() {
@@ -112,6 +151,7 @@ public class HomeFragment extends Fragment {
             empty.setTextColor(Color.DKGRAY);
             empty.setPadding(24,24,24,24);
             linearLayoutContainer.addView(empty);
+            try { if (swipeHome != null) swipeHome.setRefreshing(false); } catch (Exception ignore) {}
         });
     }
 
@@ -194,6 +234,7 @@ public class HomeFragment extends Fragment {
                 }
             }
         } catch (JSONException e) { e.printStackTrace(); }
+        try { if (swipeHome != null) swipeHome.setRefreshing(false); } catch (Exception ignore) {}
     }
 
     private void agregarPedidoALayout(final JSONObject pedido) throws JSONException {

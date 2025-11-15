@@ -3,6 +3,8 @@ package com.example.app_pedidos.ui.slideshow;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -50,13 +52,30 @@ public class SlideshowFragment extends Fragment {
     private final long interval = 5000; // 5 segundos
     private Timer timer;
     private LinearLayout linearLayoutContainer;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeHome;
     private JSONArray pedidosArray;
     private AlertDialog noVehiculoDialog;
+    private final BroadcastReceiver pedidoEstadoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            obtenerPedidosV2();
+        }
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         linearLayoutContainer = root.findViewById(R.id.linearLayoutContainer);
+        swipeHome = root.findViewById(R.id.swipeHome);
+        if (swipeHome != null) {
+            swipeHome.setOnRefreshListener(this::obtenerPedidosV2);
+            swipeHome.setColorSchemeResources(
+                    android.R.color.holo_blue_bright,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light
+            );
+        }
 
         // Iniciar la actualización automática al crear la vista
         iniciarActualizacionPeriodica();
@@ -71,6 +90,23 @@ public class SlideshowFragment extends Fragment {
                 obtenerPedidosV2();
             }
         }, 0, interval);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(com.example.app_pedidos.util.Events.ACTION_PEDIDO_ESTADO_ACTUALIZADO);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        try { requireContext().unregisterReceiver(pedidoEstadoReceiver); } catch (Exception ignore) {}
     }
 
     private void obtenerPedidosV2() {
@@ -99,15 +135,16 @@ public class SlideshowFragment extends Fragment {
                         }
 
                         JSONArray arr = response.optJSONArray("pedidos");
-                        if (arr != null) {
+                        if (arr != null && arr.length() > 0) {
                             mostrarPedidos(arr);
                         } else {
-                            if (linearLayoutContainer != null) linearLayoutContainer.removeAllViews();
+                            mostrarListaVacia();
                         }
                     } catch (Exception e) {
                         Log.e("SlideshowFragment", "Error al procesar la respuesta", e);
                         mostrarMensaje("Error al procesar datos");
                     }
+                    try { if (swipeHome != null) swipeHome.setRefreshing(false); } catch (Exception ignore) {}
                 },
                 error -> {
                     error.printStackTrace();
@@ -115,12 +152,29 @@ public class SlideshowFragment extends Fragment {
                     if (isAdded()) {
                         mostrarMensaje("Error en la solicitud HTTP");
                     }
+                    try { if (swipeHome != null) swipeHome.setRefreshing(false); } catch (Exception ignore) {}
                 }
         );
 
         if (getContext() != null) {
             Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
         }
+    }
+
+    private void mostrarListaVacia() {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            if (linearLayoutContainer == null) return;
+            linearLayoutContainer.removeAllViews();
+            TextView empty = new TextView(requireContext());
+            empty.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            empty.setText("No hay pedidos para mostrar.");
+            empty.setTextSize(16);
+            empty.setTextColor(Color.DKGRAY);
+            empty.setPadding(24,24,24,24);
+            linearLayoutContainer.addView(empty);
+            try { if (swipeHome != null) swipeHome.setRefreshing(false); } catch (Exception ignore) {}
+        });
     }
 
     private void obtenerPedidos() {
@@ -170,13 +224,18 @@ public class SlideshowFragment extends Fragment {
         try {
             linearLayoutContainer.removeAllViews();
 
+            int agregados = 0;
             for (int i = 0; i < response.length(); i++) {
                 final JSONObject pedido = response.getJSONObject(i);
                 String estado = pedido.getString("ESTADO");
                 // Mostrar solo los pedidos entregados o cancelados
                 if (estado.equals("ENTREGADO") || estado.equals("CANCELADO")) {
                     agregarPedidoALayout(pedido);
+                    agregados++;
                 }
+            }
+            if (agregados == 0) {
+                mostrarListaVacia();
             }
         } catch (JSONException e) {
             e.printStackTrace();

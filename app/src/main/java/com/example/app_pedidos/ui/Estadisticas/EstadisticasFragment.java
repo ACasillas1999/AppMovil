@@ -1,6 +1,9 @@
 package com.example.app_pedidos.ui.Estadisticas;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -65,6 +68,16 @@ public class EstadisticasFragment extends Fragment {
     private Button currentMonthButton;
     private String currentMonth;
     private AlertDialog noVehiculoDialog;
+
+    private final BroadcastReceiver pedidoEstadoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getActivity() == null) return;
+            final String username = sharedPreferences.getString("username", "");
+            String url = ApiConfig.BASE_URL + "/Pedidos_GA/App/Pedidos_Mes.php?username=" + encode(username) + "&mes=" + encode(currentMonth);
+            verificarVehiculoAsignadoThen(() -> obtenerEstadosPedidos(url));
+        }
+    };
 
     // Colores para las porciones del grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico
     private final int[] chartColors = new int[]{0xFFCCE5FF, 0xFFFFCCCC, 0xFFCCFFCC, 0xFFFFD699, 0xFFFFFFCC, 0xFFCC99FF};
@@ -137,6 +150,23 @@ public class EstadisticasFragment extends Fragment {
        // iniciarActualizacionPeriodica();
 
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(com.example.app_pedidos.util.Events.ACTION_PEDIDO_ESTADO_ACTUALIZADO);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            requireContext().registerReceiver(pedidoEstadoReceiver, filter);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        try { requireContext().unregisterReceiver(pedidoEstadoReceiver); } catch (Exception ignore) {}
     }
 
     private String encode(String value) {

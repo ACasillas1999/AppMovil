@@ -66,6 +66,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import com.example.app_pedidos.ApiConfig;
+import com.example.app_pedidos.util.Events;
 
 public class DetallePedidoActivity extends AppCompatActivity {
 
@@ -828,6 +829,18 @@ public class DetallePedidoActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             com.example.app_pedidos.ui.common.Notifier.success(DetallePedidoActivity.this, responseData);
+                            // Refrescar el estado en esta vista
+                            try {
+                                TextView tvEstado = findViewById(R.id.textEstado);
+                                if (tvEstado != null && nuevoEstado != null) {
+                                    tvEstado.setText(nuevoEstado);
+                                }
+                            } catch (Exception ignore) { }
+                            // Notificar a la app para refrescar otras interfaces
+                            Intent evt = new Intent(Events.ACTION_PEDIDO_ESTADO_ACTUALIZADO);
+                            evt.putExtra(Events.EXTRA_PEDIDO_ID, pedidoId);
+                            evt.putExtra(Events.EXTRA_NUEVO_ESTADO, nuevoEstado);
+                            sendBroadcast(evt);
                         }
                     });
                 }

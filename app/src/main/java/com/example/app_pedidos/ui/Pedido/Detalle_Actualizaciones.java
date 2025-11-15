@@ -64,6 +64,21 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
         obtenerDetallesPedido(pedidoId);
         obtenerImagenPedido(pedidoId);
 
+        // Pull-to-refresh para recargar datos del pedido
+        androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipe = findViewById(R.id.swipeDetalleAct);
+        if (swipe != null) {
+            swipe.setOnRefreshListener(() -> {
+                obtenerDetallesPedido(pedidoId);
+                obtenerImagenPedido(pedidoId);
+            });
+            swipe.setColorSchemeResources(
+                    android.R.color.holo_blue_bright,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light
+            );
+        }
+
 
         Toolbar toolbar = findViewById(R.id.toolbar_Pedidos);
         ImageButton yourButton = toolbar.findViewById(R.id.VOlverBton);
@@ -89,6 +104,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
                     public void onResponse(JSONArray response) {
                         // Procesar la respuesta y mostrar los datos en la tabla
                         mostrarDetallesPedido(response);
+                        try { ((androidx.swiperefreshlayout.widget.SwipeRefreshLayout)findViewById(R.id.swipeDetalleAct)).setRefreshing(false); } catch (Exception ignore) {}
                     }
                 },
                 new Response.ErrorListener() {
@@ -96,6 +112,7 @@ public class Detalle_Actualizaciones extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // Manejar el error
                         com.example.app_pedidos.ui.common.Notifier.error(Detalle_Actualizaciones.this, "Error al obtener los detalles del pedido: " + error.getMessage());
+                        try { ((androidx.swiperefreshlayout.widget.SwipeRefreshLayout)findViewById(R.id.swipeDetalleAct)).setRefreshing(false); } catch (Exception ignore) {}
                     }
                 });
 
