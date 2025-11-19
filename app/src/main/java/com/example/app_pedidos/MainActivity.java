@@ -21,6 +21,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.pm.PackageManager;
+
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
     private ActivityMainBinding binding;
     private String username;
     private TextView navHeaderSubtitle;
+    private TextView navHeaderVersion;
     private ImageView toolbarLogo;
     private Integer lastKmFinal = null;
     private boolean inspeccionLanzada = false;
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
 
         setSupportActionBar(binding.appBarMain.toolbar);
         toolbarLogo = binding.appBarMain.toolbar.findViewById(R.id.toolbar_logo);
+
 
         DrawerLayout drawer = binding.drawerLayout;
         // Bloquear el cajón hasta pasar validaciones (comportamiento original)
@@ -94,7 +98,44 @@ public class MainActivity extends AppCompatActivity implements ConexionPHP.Pedid
         navHeaderSubtitle = navigationView.getHeaderView(0).findViewById(R.id.NombreLogin);
         navHeaderSubtitle.setText(username);
 
+        navHeaderVersion = navigationView.getHeaderView(0).findViewById(R.id.Version);
+        try {
+            int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            String versionText = "Versión " + versionName + " (" + versionCode + ")";
+            navHeaderVersion.setText(versionText);
+        } catch (PackageManager.NameNotFoundException ignored) { }
+
+        navHeaderVersion.setOnClickListener(v -> mostrarDialogoInformacion());
+
+        UpdateManager.checkForUpdate(this);
+
         verificarVehiculoAsignado(username);
+    }
+
+    private void mostrarDialogoInformacion() {
+        String versionText = "";
+        try {
+            int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+          //  versionText = "Versión: " + versionName + " (" + versionCode + ")";
+            versionText = "Versión: "  + versionCode ;
+        } catch (PackageManager.NameNotFoundException ignored) { }
+
+        String baseUrl = ApiConfig.BASE_URL;
+
+      //  String message = versionText + "\n\nServidor: " + baseUrl;
+        String message = versionText;
+
+        new AlertDialog.Builder(this)
+                .setTitle("Información de la aplicación")
+                .setMessage(message)
+                .setPositiveButton("Aceptar", null)
+                .show();
     }
 
     @Override
