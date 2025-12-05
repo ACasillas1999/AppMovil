@@ -1,5 +1,7 @@
 package com.example.app_pedidos.ui.Inspeccion;
 
+
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -177,14 +179,14 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
         for (Map.Entry<Item, RadioGroup> e : itemRadioMap.entrySet()) {
             Item it = e.getKey(); RadioGroup rg = e.getValue();
             int sel = rg.getCheckedRadioButtonId();
-            if (sel == -1) { ok = false; if (first == null) { first = it; firstMsg = "Hay Ã­tems sin calificaciÃ³n. Revisa: "+it.item; } continue; }
+            if (sel == -1) { ok = false; if (first == null) { first = it; firstMsg = "Hay items sin calificaciÃ³n. Revisa: "+it.item; } continue; }
             RadioButton rb = rg.findViewById(sel);
             String cal = rb==null?null:valueOf(rb);
             if ("Mal".equals(cal)) {
                 EditText obs = itemObsMap.get(it);
                 String txt = obs==null?null:obs.getText().toString().trim();
                 if (txt==null || txt.isEmpty()) {
-                    ok = false; if (first == null) { first = it; firstMsg = "Falta observaciÃ³n para Ã­tem en estado 'Mal': "+it.item; }
+                    ok = false; if (first == null) { first = it; firstMsg = "Falta observación para estado 'Mal': "+it.item; }
                     if (obs != null) obs.setError("Requerido si es 'Mal'");
                 }
             }
@@ -218,8 +220,8 @@ public class InspeccionVehicularActivity extends AppCompatActivity {
         } catch (JSONException ex) { Notifier.error(this, "Error al preparar datos"); return; }
         Utf8JsonObjectRequest req = new Utf8JsonObjectRequest(
                 Request.Method.POST, url, body,
-                response -> { if (response.optBoolean("ok", false)) { Notifier.success(this, "InspecciÃ³n guardada"); setResult(RESULT_OK); finish(); } else { Notifier.error(this, response.optString("error","No se pudo guardar")); } },
-                error -> Notifier.connectionLost(this, "Error de conexiÃ³n", "Reintentar", this::enviarChecklist)
+                response -> { if (response.optBoolean("ok", false)) { Notifier.success(this, "Inspección guardada"); setResult(RESULT_OK); finish(); } else { Notifier.error(this, response.optString("error","No se pudo guardar")); } },
+                error -> Notifier.connectionLost(this, "Error de conexión", "Reintentar", this::enviarChecklist)
         );
         Volley.newRequestQueue(this).add(req);
     }
